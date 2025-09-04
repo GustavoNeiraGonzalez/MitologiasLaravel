@@ -11,7 +11,7 @@ class StoreMitologiasRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,6 +23,7 @@ class StoreMitologiasRequest extends FormRequest
     {
         return [
             //
+            'Historia' => 'required|string|max:1', // Reglas de validación
         ];
     }
 }

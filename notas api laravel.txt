@@ -151,17 +151,83 @@ viendo que se ve exitosamente el texto, ahora para retornar los datos de mitolog
    public function index()
     {
         //
-        $data = Mitologias::all();//aqui se recupera todos los datos de mitologias y se almacena en data
+        $mitologias = Mitologias::all();//aqui se recupera todos los datos de mitologias y se almacena en data
 
-        if ($data->isEmpty()){//aqui se verifica y muestra mensaje error si esta vacia los datos de mitologias
+        if ($mitologias->isEmpty()){//aqui se verifica y muestra mensaje error si esta vacia los datos de mitologias
             $data = [
                 'message' =>'No se encontraron mitologías' ,
                 'status' =>404
             ];
             return response()->json($data, 404);
         }
-
+ 	$data = [
+                'Mitologias' =>$mitologias ,
+                'status' =>200
+            ];
         return response()->json($data, 200);
     }
 
 )
+el resultado daria los datos en formaton json y si no hay datos, mostrar el mensaje correspondiente en el mismo formato
+-------------------------
+STORE
+PARA INGRESAR LA PRIMERA MITOLOGIA USAREMOS STORE DEL CONTROLADOR MITOLogias
+
+primero importamos validator y Request, (request importante o te saldra un error 500 internal server error que me costo allar que no lo tenia importado)
+use Illiminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
+
+ahora en store haremos algo asi
+(
+public function store(Request $request)
+  {
+      $validator = Validator::make($request->all(), [// Se crean las reglas de validación
+            'Historia' => 'required|string|max:4000',
+        ]);
+        if ($validator->fails()) {// Verifica si la validación falla
+            $data = [
+                'message' => 'Error de validación',
+                'errors' => $validator->errors(),
+                'status' => 422
+            ];
+            return response()->json($data, 422);
+        }
+
+        try {
+            $mitologias = Mitologias::create([//crea nuevo registro
+                'Historia' => $request->Historia
+            ]);
+
+            $data = [//mensaje de exito
+                'message' => 'Mitología creada exitosamente',
+                'Mitologia' => $mitologias,
+                'status' => 201
+            ];
+            return response()->json($data, 201);//retorna mensaje de exito
+
+        } catch (\Exception $e) {//captura errores
+            $data = [
+                'message' => 'Error al crear la mitología',
+                'error' => $e->getMessage(),
+                'status' => 500
+            ];
+            return response()->json($data, 500);//retorna mensaje de error
+        }
+  }
+)
+utilizamos validator para verificar que el campo Historia no este vacio, que sea string y un maximo de 4000 caracteres
+si no es el caso mandaremos un mensaje de error, luego un try catch para manejar errores, intentamos crear una nueva
+mitologia
+(NOTA falto el campo titulo asi que fuera de esto lo he creado a traves de migraciones luego modificar en models mitologias y controller mitologias)
+
+luego nos vamos a routes/api a crear la ruta (no importamos el controlador porque ya lo hicimos anteriormente)
+
+Route::post('/mitologias', [MitologiasController::class, 'store']);
+
+y finalmente pruebas que funcione la peticion, en este caso voy a la extension thunder client
+con una peticion post y la url http://127.0.0.1:8000/api/mitologias
+en el campo body, json 
+{"Historia":"ola",
+"titulo":"saludos"} (titulo agregado fuera de las instrucciones)
+
+tambien puedes ver los mensajes de errores por faltar algun campo o pasar el limite de caracteres

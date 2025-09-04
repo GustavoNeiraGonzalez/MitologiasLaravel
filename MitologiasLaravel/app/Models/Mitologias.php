@@ -10,7 +10,8 @@ class Mitologias extends Model
     /** @use HasFactory<\Database\Factories\MitologiasFactory> */
     use HasFactory;
     protected $fillable = [
-        'Historia'
+        'Historia',
+        'titulo'
     ];
 
     public function usuariosQueGuardaron()

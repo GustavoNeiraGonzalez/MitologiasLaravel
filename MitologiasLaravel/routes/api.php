@@ -9,3 +9,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::get('/mitologias', [MitologiasController::class, 'index']);
+
+Route::post('/mitologias', [MitologiasController::class, 'store']);
+
