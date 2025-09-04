@@ -1,15 +1,17 @@
+--
+INSTALACION
+
 composer global require laravel/installer
 
 laravel new example-app
 
 cd example-app
 
----
 ahi creaste el proyecto laravel
 ---
 ---
-configurar .env
----:
+configurar .env:
+
 para poder conectarte a tu bd tienes que configurar la conexion a la misma,
 usando xampp usarias el puerto que xampp usa, en mi caso 3310 ejemplo
 
@@ -37,12 +39,65 @@ donde colocaremos los tipos de datos que tendra la tabla de la bdd dentro de la 
   	Schema::create('mitologias', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->text('Historia');
         });
     }
 
 donde foreignId hace referencias a las relacion que tiene con la tabla usuario y si se borra un usuario tambien sus 
-mitologias asociadas
+mitologias asociadas gracias a ondelete y constrained es necesario porque configura las relaciones de claves
+y nullable indica que puede ser null, en este caso es necesario porque una mitologia no necesariamente estaria asociado
+ a algun usuario
 e historia es tipo TEXT porque text permite mas caracteres que un STRING
---
+
+luego ejecutar:
+php artisan migrate
+-------------------------
+ERROR DE LOGICA
+
+en la anterior hemos relacionado usuarios a mitologias, sin embargo la logica del programa indica que un usuario solo da
+"guardar" mitologia para verla despues, con ondelete('cascade') estariamos borrando la mitologia si el usuario es eliminado
+para corregirlo creamos 2 nuevas migraciones 1 para crear una tabla intermedia y otra para eliminar la clave foranea dentro de 
+la tabla mitologias
+
+php artisan make:migration remove_user_id_from_mitologias_table --table=mitologias
+php artisan make:migration mitologia_users
+
+en remove_user_id..... haremos esto dentro de up() y down() 
+(
+  public function up(): void
+    {
+        Schema::table('mitologias', function (Blueprint $table) {
+            //
+            $table->dropForeign(['user_id']);
+            $table->dropColumn('user_id');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('mitologias', function (Blueprint $table) {
+            //
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        });
+    }
+)
+y dentro de mitologia_users creamos las relaciones
+(
+public function up(): void
+    {
+        //
+        Schema::create('mitologia_user', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('mitologia_id')->constrained('mitologias')->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
+)
+y finalmente correr las migraciones
+php artisan migrate
+-------------------------
