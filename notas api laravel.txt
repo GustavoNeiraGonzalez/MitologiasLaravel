@@ -1,0 +1,48 @@
+composer global require laravel/installer
+
+laravel new example-app
+
+cd example-app
+
+---
+ahi creaste el proyecto laravel
+---
+---
+configurar .env
+---:
+para poder conectarte a tu bd tienes que configurar la conexion a la misma,
+usando xampp usarias el puerto que xampp usa, en mi caso 3310 ejemplo
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3310
+DB_DATABASE=MitologiasLaravel
+DB_USERNAME=root
+DB_PASSWORD=
+
+---
+crear tablas de datos
+
+antes de poder usar datos en tu bd tienes que crear datos personalizados segun tus necesidades
+por ejemplo usaremos users tal cual deberia venir por defecto pero tambien crearemos la tabla mitologias mitologias
+con el comando:
+
+php artisan make:model Mitologias --all
+
+luego de esto nos podemos dirigir a: database/migrations y el archivo que diga la fecha y create_mitologias_table
+donde colocaremos los tipos de datos que tendra la tabla de la bdd dentro de la funcion up():
+
+    public function up(): void
+    {
+  	Schema::create('mitologias', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
+            $table->text('Historia');
+        });
+    }
+
+donde foreignId hace referencias a las relacion que tiene con la tabla usuario y si se borra un usuario tambien sus 
+mitologias asociadas
+e historia es tipo TEXT porque text permite mas caracteres que un STRING
+--
