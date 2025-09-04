@@ -14,6 +14,17 @@ class MitologiasController extends Controller
     public function index()
     {
         //
+        $data = Mitologias::all();//aqui se recupera todos los datos de mitologias y se almacena en data
+
+        if ($data->isEmpty()){//aqui se verifica y muestra mensaje error si esta vacia los datos de mitologias
+            $data = [
+                'message' =>'No se encontraron mitologías' ,
+                'status' =>404
+            ];
+            return response()->json($data, 404);
+        }
+
+        return response()->json($data, 200);
     }
 
     /**

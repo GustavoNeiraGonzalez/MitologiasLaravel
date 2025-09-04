@@ -46,4 +46,9 @@ class User extends Authenticatable
         ];
     }
 
+    public function mitologiasGuardadas()
+    {
+        return $this->belongsToMany(Mitologias::class, 'mitologia_user', 'user_id', 'mitologia_id');
+    }
+
 }

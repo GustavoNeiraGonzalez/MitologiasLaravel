@@ -7,7 +7,10 @@ laravel new example-app
 
 cd example-app
 
-ahi creaste el proyecto laravel
+(creaste el proyecto laravel)
+pero falta que laravel pueda ser usado como api asi que:
+
+php artisan install:api
 ---
 ---
 configurar .env:
@@ -100,4 +103,65 @@ public function up(): void
 )
 y finalmente correr las migraciones
 php artisan migrate
+----------------------
+ultimo paso relacion de tablas:
+
+ahora debes dirigirte a models y especificar las relaciones entre tablas, en este caso usando una tabla intermedia mitologia_user
+será ligeramente diferente:
+
+dentro de models/Mitologias
+(
+    public function usuariosQueGuardaron()
+    {
+        return $this->belongsToMany(User::class, 'mitologia_user', 'mitologia_id', 'user_id');
+    }
+)
+y dentro de models/Users
+(
+  public function mitologiasGuardadas()
+    {
+        return $this->belongsToMany(Mitologias::class, 'mitologia_user', 'user_id', 'mitologia_id');
+    }
+)
+ahora solo queda probar que este correcto creando datos
 -------------------------
+ROUTES API Y CONTROLER
+(necesitamos haber instalado api que se indica al principio de las notas en instalacion)
+antes de probar si estan correctas las relaciones entre tablas primero vamos a app/http/controller/mitologiascontroller.php
+y en el controlador mostraremos un texto simple
+(
+	public function index()
+	{
+        	//
+        	return "obteniendo mitologias";
+    	}
+)
+ahora retornará "obteniendo mitologias" pero para verlo nos dirigimos a routes/api.php
+primero debemos importar el controlador y luego crear una ruta que use la funcion index del controlador
+(
+	use App\Http\Controllers\MitologiasController;
+
+	Route::get('/mitologias', [MitologiasController::class, 'index']);
+)
+ahora para ver si funciona, nos dirigimos a la url correspondiente en este caso http://127.0.0.1:8000/api/mitologias
+NOTA COMO ES API SE USA API EN LA URL
+
+viendo que se ve exitosamente el texto, ahora para retornar los datos de mitologias, simplemente nos volvemos al controller y modificamos index
+(
+   public function index()
+    {
+        //
+        $data = Mitologias::all();//aqui se recupera todos los datos de mitologias y se almacena en data
+
+        if ($data->isEmpty()){//aqui se verifica y muestra mensaje error si esta vacia los datos de mitologias
+            $data = [
+                'message' =>'No se encontraron mitologías' ,
+                'status' =>404
+            ];
+            return response()->json($data, 404);
+        }
+
+        return response()->json($data, 200);
+    }
+
+)

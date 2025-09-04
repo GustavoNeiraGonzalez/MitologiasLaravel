@@ -13,8 +13,8 @@ class Mitologias extends Model
         'Historia'
     ];
 
-    public function user()
+    public function usuariosQueGuardaron()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsToMany(User::class, 'mitologia_user', 'mitologia_id', 'user_id');
     }
 }
