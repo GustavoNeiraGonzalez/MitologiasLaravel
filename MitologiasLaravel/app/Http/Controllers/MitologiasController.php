@@ -23,7 +23,6 @@ class MitologiasController extends Controller
             ];
             return response()->json($data, 404);
         }
-
         return response()->json($data, 200);
     }
 
