@@ -377,3 +377,72 @@ Route::put('/mitologias/{id}', [MitologiasController::class, 'update']);
 )
 
 y simplemente probamos que funcione
+
+---------------------------
+PATCH
+CUANDO MODIFICAMOS PARCIALMENTE ALGUNOS DATOS
+
+como queremos modificar no todos los datos de la mitologia haremos casi lo mismo en mitologia controler
+con ligeras diferencias:
+
+(
+    public function updatePartial(Request $request,$id)
+    {
+        $mitologia = Mitologias::find($id);//busca mitologia por id
+        //
+        $validator = Validator::make($request->all(), [// Se crean las reglas de validación
+            'Historia' => '|string|max:4000',
+            'titulo' => '|string|max:25',
+        ]);
+        if ($validator->fails()) {// Verifica si la validación falla
+            $data = [
+                'message' => 'Error de validación',
+                'errors' => $validator->errors(),
+                'status' => 422
+            ];
+            return response()->json($data, 422);//retorna mensaje de error
+        }
+        if (!$mitologia) {//verifica si existe la mitologia
+            $data = [
+                'message' => 'Mitología no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);//retorna mensaje de error
+        }
+        try {
+            if ($request->has('Historia')) {
+                $mitologia->Historia = $request->Historia;//actualiza historia
+            }
+            if ($request->has('titulo')) {
+                $mitologia->titulo = $request->titulo;//actualiza titulo
+            }
+            $mitologia->save();//actualiza mitologia
+            $data = [//mensaje de exito
+                'message' => 'Mitología actualizada exitosamente',
+                'Mitologia' => $mitologia->titulo,
+                'status' => 200
+            ];
+            return response()->json($data, 200);
+
+        } catch (\Exception $e) {//captura errores
+            $data = [
+                'message' => 'Error al actualizar la mitología',
+                'error' => $e->getMessage(),
+                'status' => 500
+            ];
+            return response()->json($data, 500);//retorna mensaje de error
+        }
+    }
+)
+DIFERENCIAS CON LA FUNCION UPDATE:
+-EN VALIDATOR los datos no tienen required  por lo que no dara error si llegan vacios en la peticion
+-EN EL TRY CUANDO QUEREMOS MODIFICAR LOS DATOS DE MITOLOGIAS usamos un if para modificar si el campo del request no esta vacio,
+ si esta vacio no se modifica
+
+luego nos vamos a api y creamos la ruta
+(
+//ruta para actualizar parcialmente la mitologia por id
+Route::patch('/mitologias/{id}', [MitologiasController::class, 'updatePartial']);
+)
+
+y luego simplemente probamos que se modifiquen sin presentar todos los datos y los datos que no estamos modificando que no se cambien

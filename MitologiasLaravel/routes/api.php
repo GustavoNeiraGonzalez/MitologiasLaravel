@@ -16,3 +16,5 @@ Route::post('/mitologias', [MitologiasController::class, 'store']);
 Route::get('/mitologias/{id}', [MitologiasController::class, 'show']);
 //ruta para actualizar mitologia por id
 Route::put('/mitologias/{id}', [MitologiasController::class, 'update']);
+//ruta para actualizar parcialmente la mitologia por id
+Route::patch('/mitologias/{id}', [MitologiasController::class, 'updatePartial']);

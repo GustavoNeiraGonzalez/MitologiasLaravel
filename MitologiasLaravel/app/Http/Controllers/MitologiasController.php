@@ -101,13 +101,6 @@ class MitologiasController extends Controller
         return response()->json($data, 200);//retorna mensaje de exito
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Mitologias $mitologias)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -158,6 +151,53 @@ class MitologiasController extends Controller
         }
     }
 
+    public function updatePartial(Request $request,$id)
+    {
+        $mitologia = Mitologias::find($id);//busca mitologia por id
+        //
+        $validator = Validator::make($request->all(), [// Se crean las reglas de validación
+            'Historia' => '|string|max:4000',
+            'titulo' => '|string|max:25',
+        ]);
+        if ($validator->fails()) {// Verifica si la validación falla
+            $data = [
+                'message' => 'Error de validación',
+                'errors' => $validator->errors(),
+                'status' => 422
+            ];
+            return response()->json($data, 422);//retorna mensaje de error
+        }
+        if (!$mitologia) {//verifica si existe la mitologia
+            $data = [
+                'message' => 'Mitología no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);//retorna mensaje de error
+        }
+        try {
+            if ($request->has('Historia')) {
+                $mitologia->Historia = $request->Historia;//actualiza historia
+            }
+            if ($request->has('titulo')) {
+                $mitologia->titulo = $request->titulo;//actualiza titulo
+            }
+            $mitologia->save();//actualiza mitologia
+            $data = [//mensaje de exito
+                'message' => 'Mitología actualizada exitosamente',
+                'Mitologia' => $mitologia->titulo,
+                'status' => 200
+            ];
+            return response()->json($data, 200);
+
+        } catch (\Exception $e) {//captura errores
+            $data = [
+                'message' => 'Error al actualizar la mitología',
+                'error' => $e->getMessage(),
+                'status' => 500
+            ];
+            return response()->json($data, 500);//retorna mensaje de error
+        }
+    }
     /**
      * Remove the specified resource from storage.
      */
