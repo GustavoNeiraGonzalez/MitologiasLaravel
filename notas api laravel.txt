@@ -446,3 +446,11 @@ Route::patch('/mitologias/{id}', [MitologiasController::class, 'updatePartial'])
 )
 
 y luego simplemente probamos que se modifiquen sin presentar todos los datos y los datos que no estamos modificando que no se cambien
+
+----
+EXPLICACIONES QUE FALTAN EN MITOLOGIAS:
+-PODER HACER LA UNION ENTRE TABLAS USER Y MITOLOGIAS (tabla intermedia mitologia_user) 
+AL CREAR DATOS (en logica de aplicacion es que le das a guardar como favorito)
+
+-QUE HACER CON LOS ESPACIOS EN EL CAMPO "Historia" DE MITOLOGIAS es decir al ser una historia hay un orden en el texto que se debe seguir
+con espacios
