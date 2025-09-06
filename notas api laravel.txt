@@ -369,3 +369,11 @@ con sus respectivos mensajes de error,
 luego en un try catch, hemos actualizado los datos buscados por id de la mitologia con los datos enviados en la peticion
 en request, y luego guardamos con save. si todo va bien es un mensaje con exito si va mal se usa el catch
 
+luego en api creamos al ruta
+
+(
+//ruta para actualizar mitologia por id
+Route::put('/mitologias/{id}', [MitologiasController::class, 'update']);
+)
+
+y simplemente probamos que funcione
