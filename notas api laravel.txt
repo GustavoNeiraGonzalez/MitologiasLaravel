@@ -202,7 +202,7 @@ public function store(Request $request)
                 'message' => 'Mitología creada exitosamente',
                 'Mitologia' => $mitologias,
                 'status' => 201
-            ];
+            ]; n
             return response()->json($data, 201);//retorna mensaje de exito
 
         } catch (\Exception $e) {//captura errores
@@ -231,3 +231,42 @@ en el campo body, json
 "titulo":"saludos"} (titulo agregado fuera de las instrucciones)
 
 tambien puedes ver los mensajes de errores por faltar algun campo o pasar el limite de caracteres
+
+-------------------------
+SHOW
+para buscar la informacion de un usuario especifico:
+
+primero nos vamos al controlador mitologias
+y en la funcion show quedaria asi:
+
+(
+  public function show($id)
+    {
+        //
+        $mitologia = Mitologias::find($id);//busca mitologia por id
+        if (!$mitologia) {//verifica si existe la mitologia
+            $data = [
+                'message' => 'Mitología no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $data = [//muestra mitologia encontrada
+            'Mitologia' => $mitologia,
+            'status' => 200
+        ];
+        return response()->json($data, 200);//retorna mensaje de exito
+    }
+)
+
+donde buscandos mitologia por ID, un if para mostrar mensaje de error si es que no se ha encontrado una mitologia
+y si la ha encontrado retornar la mitologia especifica
+
+luego nos vamos a api y creamos la ruta, que es sencillo porque ya lo hemos visto
+(
+//ruta para mostrar mitologia por id
+Route::get('/mitologias/{id}', [MitologiasController::class, 'show']);
+)
+
+y ahora probar que funcione en la extension thunder client o donde quieras
+----

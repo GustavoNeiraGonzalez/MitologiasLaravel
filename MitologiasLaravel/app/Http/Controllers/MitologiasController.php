@@ -83,9 +83,22 @@ class MitologiasController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Mitologias $mitologias)
+    public function show($id)
     {
         //
+        $mitologia = Mitologias::find($id);//busca mitologia por id
+        if (!$mitologia) {//verifica si existe la mitologia
+            $data = [
+                'message' => 'Mitología no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $data = [//muestra mitologia encontrada
+            'Mitologia' => $mitologia,
+            'status' => 200
+        ];
+        return response()->json($data, 200);//retorna mensaje de exito
     }
 
     /**
