@@ -454,3 +454,5 @@ AL CREAR DATOS (en logica de aplicacion es que le das a guardar como favorito)
 
 -QUE HACER CON LOS ESPACIOS EN EL CAMPO "Historia" DE MITOLOGIAS es decir al ser una historia hay un orden en el texto que se debe seguir
 con espacios
+
+buen tutorial en youtube https://www.youtube.com/watch?v=eLI8c_NtkBk&t=1165s

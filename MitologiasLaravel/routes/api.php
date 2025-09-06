@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MitologiasController;
+use App\Http\Controllers\userController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -18,3 +19,7 @@ Route::get('/mitologias/{id}', [MitologiasController::class, 'show']);
 Route::put('/mitologias/{id}', [MitologiasController::class, 'update']);
 //ruta para actualizar parcialmente la mitologia por id
 Route::patch('/mitologias/{id}', [MitologiasController::class, 'updatePartial']);
+
+Route::get('/users', [userController::class, 'index']);
+//ruta para crear  user
+Route::post('/users', [userController::class, 'store']);
