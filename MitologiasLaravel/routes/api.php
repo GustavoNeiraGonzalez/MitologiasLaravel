@@ -14,4 +14,5 @@ Route::get('/mitologias', [MitologiasController::class, 'index']);
 Route::post('/mitologias', [MitologiasController::class, 'store']);
 //ruta para mostrar mitologia por id
 Route::get('/mitologias/{id}', [MitologiasController::class, 'show']);
-
+//ruta para actualizar mitologia por id
+Route::put('/mitologias/{id}', [MitologiasController::class, 'update']);

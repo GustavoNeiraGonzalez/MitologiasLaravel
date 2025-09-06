@@ -270,3 +270,102 @@ Route::get('/mitologias/{id}', [MitologiasController::class, 'show']);
 
 y ahora probar que funcione en la extension thunder client o donde quieras
 ----
+DELETE
+eliminar una mitologia:
+
+esta funcion será bastanet similar a show, asi que nos vamos al controlador mitologias
+y en la funcion delete será asi:
+
+(
+   public function destroy($id)
+    {
+        //
+        $mitologia = Mitologias::find($id);//busca mitologia por id
+        if (!$mitologia) {//verifica si existe la mitologia
+            $data = [
+                'message' => 'Mitología no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $titulo = $mitologia->titulo; // Guarda el título antes de eliminar la mitología
+        $mitologia->delete();//elimina mitologia
+
+        $data = [//mensaje de exito
+            'message' => 'Mitología eliminada exitosamente',
+            'titulo' => $titulo,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+    }
+)
+y la diferencia es que aqui usaremos delete() tambien guardamos titulo de la mitologia antes de borrarlo para mostrar que titulo de mitologia
+hemos borrado
+
+
+en api agregamos simplemente la ruta y listo
+
+(
+//ruta para eliminar mitologia por id
+Route::delete('/mitologias/{id}', [MitologiasController::class, 'destroy']);
+)
+
+------
+PUT UPDATE
+
+para actualizar una mitologia tambien buscamos por id pero aqui validamos tambien que los datos que actualizaremos esten correctos
+para ello nos vamos a controlador mitologias
+y en la funcion update
+(
+  public function update(Request $request,$id)
+    {
+        $mitologia = Mitologias::find($id);//busca mitologia por id
+        //
+        $validator = Validator::make($request->all(), [// Se crean las reglas de validación
+            'Historia' => 'required|string|max:4000',
+            'titulo' => 'required|string|max:25',
+        ]);
+        if ($validator->fails()) {// Verifica si la validación falla
+            $data = [
+                'message' => 'Error de validación',
+                'errors' => $validator->errors(),
+                'status' => 422
+            ];
+            return response()->json($data, 422);//retorna mensaje de error
+        }
+        if (!$mitologia) {//verifica si existe la mitologia
+            $data = [
+                'message' => 'Mitología no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);//retorna mensaje de error
+        }
+        try {
+            $mitologia->Historia = $request->Historia;//actualiza historia
+            $mitologia->titulo = $request->titulo;//actualiza titulo
+
+            $mitologia->save();//actualiza mitologia
+
+            $data = [//mensaje de exito
+                'message' => 'Mitología actualizada exitosamente',
+                'Mitologia' => $mitologia->titulo,
+                'status' => 200
+            ];
+            return response()->json($data, 200);
+
+        } catch (\Exception $e) {//captura errores
+            $data = [
+                'message' => 'Error al actualizar la mitología',
+                'error' => $e->getMessage(),
+                'status' => 500
+            ];
+            return response()->json($data, 500);//retorna mensaje de error
+        }
+    }
+)
+
+aqui hemos buscado por id, hemos validado que los datos a actualizar sean correctos y ver si la mitologia existia 
+con sus respectivos mensajes de error,
+luego en un try catch, hemos actualizado los datos buscados por id de la mitologia con los datos enviados en la peticion
+en request, y luego guardamos con save. si todo va bien es un mensaje con exito si va mal se usa el catch
+
