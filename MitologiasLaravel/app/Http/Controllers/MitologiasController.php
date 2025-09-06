@@ -120,8 +120,25 @@ class MitologiasController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Mitologias $mitologias)
+    public function destroy($id)
     {
         //
+        $mitologia = Mitologias::find($id);//busca mitologia por id
+        if (!$mitologia) {//verifica si existe la mitologia
+            $data = [
+                'message' => 'Mitología no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $titulo = $mitologia->titulo; // Guarda el título antes de eliminar la mitología
+        $mitologia->delete();//elimina mitologia
+
+        $data = [//mensaje de exito
+            'message' => 'Mitología eliminada exitosamente',
+            'titulo' => $titulo,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
     }
 }
