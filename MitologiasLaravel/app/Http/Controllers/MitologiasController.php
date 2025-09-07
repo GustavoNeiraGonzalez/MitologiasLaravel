@@ -175,6 +175,14 @@ class MitologiasController extends Controller
             return response()->json($data, 404);//retorna mensaje de error
         }
         try {
+            if ($request->hasAny(['Historia', 'titulo'])) {// Verifica si al menos uno de los campos está presente en la solicitud
+            } else {
+                $data = [
+                    'message' => 'No se proporcionaron datos para actualizar',
+                    'status' => 400
+                ];
+                return response()->json($data, 400);//retorna mensaje de error
+            }
             if ($request->has('Historia')) {
                 $mitologia->Historia = $request->Historia;//actualiza historia
             }

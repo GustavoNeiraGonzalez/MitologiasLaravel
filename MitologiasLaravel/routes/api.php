@@ -23,3 +23,7 @@ Route::patch('/mitologias/{id}', [MitologiasController::class, 'updatePartial'])
 Route::get('/users', [userController::class, 'index']);
 //ruta para crear  user
 Route::post('/users', [userController::class, 'store']);
+//Ruta para mostrar user por id
+Route::get('/users/{id}', [userController::class, 'show']);
+//Ruta modificar parcialmente usuario (no correo)
+Route::patch('/users/{id}', [userController::class, 'updatePartial']);

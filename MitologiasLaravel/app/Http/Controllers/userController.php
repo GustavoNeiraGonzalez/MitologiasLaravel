@@ -65,4 +65,66 @@ class userController extends Controller
             return response()->json($data, 500);
         }
     }
+    public function show($id){
+        $user = User::find($id);
+        if(!$user){
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $data = [
+            'user' => $user,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+
+    }
+
+    public function updatePartial(Request $request, $id){
+        $VALIDATOR = Validator::make($request->all(),[
+            'name' => '|string|max:30',
+            'password' => '|string|min:8'
+        ]);
+        if($VALIDATOR->fails()){
+            $data = ([
+                'message' => 'error de validacion',
+                'errors' => $VALIDATOR->errors(),
+                'status'=>422
+            ]);
+            return response()->json($data,422);
+        }
+        $user = User::find($id);
+        if(!$user){
+            $data = ([
+                'message' => 'usuario no encontrado',
+                'status'=>404
+            ]);
+            return response()->json($data,404);
+        }
+        if(!$request->hasAny(['name','password'])){//verifica que se envie al menos un dato para actualizar
+            $data = ([
+                'message' => 'no se enviaron datos para actualizar',
+                'status'=>422
+            ]);
+            return response()->json($data,422);
+        }
+
+        if($request->has('name')){//si se envia el dato se actualiza
+            $user->name = $request->name;
+        }
+        if($request->has('password')){
+            $user->password = bcrypt($request->password);
+        }
+
+        $user->save();//guarda los cambios
+
+        $data = ([
+            'message' => 'Usuario actualizado con éxito',
+            'user' => $user,
+            'status' => 200
+        ]);
+        return response()->json($data, 200);
+    }
 }
