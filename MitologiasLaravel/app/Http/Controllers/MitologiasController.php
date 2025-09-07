@@ -175,8 +175,7 @@ class MitologiasController extends Controller
             return response()->json($data, 404);//retorna mensaje de error
         }
         try {
-            if ($request->hasAny(['Historia', 'titulo'])) {// Verifica si al menos uno de los campos está presente en la solicitud
-            } else {
+            if (!$request->hasAny(['Historia', 'titulo'])) {// Verifica si al menos uno de los campos está presente en la solicitud
                 $data = [
                     'message' => 'No se proporcionaron datos para actualizar',
                     'status' => 400

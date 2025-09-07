@@ -410,6 +410,13 @@ con ligeras diferencias:
             return response()->json($data, 404);//retorna mensaje de error
         }
         try {
+	    if (!$request->hasAny(['Historia', 'titulo'])) {// Verifica si al menos uno de los campos está presente en la solicitud
+                $data = [
+                    'message' => 'No se proporcionaron datos para actualizar',
+                    'status' => 400
+                ];
+                return response()->json($data, 400);//retorna mensaje de error
+            }
             if ($request->has('Historia')) {
                 $mitologia->Historia = $request->Historia;//actualiza historia
             }
@@ -435,6 +442,7 @@ con ligeras diferencias:
     }
 )
 DIFERENCIAS CON LA FUNCION UPDATE:
+-CON hasAny COMPROBAMOS QUE ALMENOS UNO DE LOS CAMPOS NO ESTE VACIO      
 -EN VALIDATOR los datos no tienen required  por lo que no dara error si llegan vacios en la peticion
 -EN EL TRY CUANDO QUEREMOS MODIFICAR LOS DATOS DE MITOLOGIAS usamos un if para modificar si el campo del request no esta vacio,
  si esta vacio no se modifica
