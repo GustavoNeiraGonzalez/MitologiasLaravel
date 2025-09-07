@@ -19,6 +19,8 @@ Route::get('/mitologias/{id}', [MitologiasController::class, 'show']);
 Route::put('/mitologias/{id}', [MitologiasController::class, 'update']);
 //ruta para actualizar parcialmente la mitologia por id
 Route::patch('/mitologias/{id}', [MitologiasController::class, 'updatePartial']);
+//ruta para eliminar mitologia por id
+Route::delete('/mitologias/{id}', [MitologiasController::class, 'destroy']);
 
 Route::get('/users', [userController::class, 'index']);
 //ruta para crear  user
@@ -27,3 +29,5 @@ Route::post('/users', [userController::class, 'store']);
 Route::get('/users/{id}', [userController::class, 'show']);
 //Ruta modificar parcialmente usuario (no correo)
 Route::patch('/users/{id}', [userController::class, 'updatePartial']);
+//ruta eliminar usuario
+Route::delete('/users/{id}', [userController::class, 'destroy']);
