@@ -55,6 +55,7 @@ e historia es tipo TEXT porque text permite mas caracteres que un STRING
 
 luego ejecutar:
 php artisan migrate
+
 -------------------------
 ERROR DE LOGICA
 
@@ -103,8 +104,9 @@ public function up(): void
 )
 y finalmente correr las migraciones
 php artisan migrate
+
 ----------------------
-ultimo paso relacion de tablas:
+ultimo paso RELACION ENTRE TABLAS:
 
 ahora debes dirigirte a models y especificar las relaciones entre tablas, en este caso usando una tabla intermedia mitologia_user
 será ligeramente diferente:
@@ -269,7 +271,8 @@ Route::get('/mitologias/{id}', [MitologiasController::class, 'show']);
 )
 
 y ahora probar que funcione en la extension thunder client o donde quieras
-----
+
+--------------
 DELETE
 eliminar una mitologia:
 
@@ -455,12 +458,141 @@ Route::patch('/mitologias/{id}', [MitologiasController::class, 'updatePartial'])
 
 y luego simplemente probamos que se modifiquen sin presentar todos los datos y los datos que no estamos modificando que no se cambien
 
+------------
+ASOCIAR USUARIO Y MITOLOGIA 
+no es obligatoria la asociacion entre estas 2 tablas por lo que
+se creará otra funcion/peticion dentro del modelo controlador
+
+(
+use App\Models\User;
+
+ //asociar mitologia a usuario (guardar mitologia)
+    public function attachUser($IdMitologia, $IdUsuario)
+    {
+        // Encuentra la mitología y el usuario por sus IDs
+        $mitologia = Mitologias::find($IdMitologia);
+        $usuario = User::find($IdUsuario);
+
+        if(!$mitologia){//verifica si existe mitologia
+            $data = [
+                'message' => 'Mitología no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        if(!$usuario){//verifica si existe usuario
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        // Asocia al usuario con la mitología:
+        //usuariosQueGuardaron es el nombre de la funcion en el MODELO Mitologias para
+        //  la relacion muchos a muchos, por eso viene de $mitologia
+        $mitologia->usuariosQueGuardaron()->syncWithoutDetaching([$usuario->id]);// Evita duplicados
+        return response()->json([
+            'message' => "Usuario {$usuario->id} asociado a la mitología {$mitologia->id}"
+        ]);
+    }
+)
+
+aqui hacemos lo siguiente:
+-importamos modelo user para buscar por id el usuario que queremos asociar
+- verificaciones de que exista mitologia user
+- utilizamos $mitologia y buscamos la funcion para asociar usuario que creamos en los inicios de la instrucciones
+	usuariosQueGuardaron() y la unimos con syncWithoutDetaching para evitar duplicaciones, y mandamos el id de usuario
+
+luego vamos y craemos la peticion post:
+
+//ruta para asociar un usuario a una mitologia (guardar mitologia)
+Route::post('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'attachUser']);
+
+----------------------
+ELIMINAR ASOSIACION 
+ES MUY SIMILAR A ASOCIAR TABLAS PERO NO USAMOS syncWithoutDetaching()
+y usamos detach()
+
+(
+    public function detachUser($IdMitologia, $IdUsuario)
+    {
+        // Encuentra la mitología y el usuario por sus IDs
+        $mitologia = Mitologias::find($IdMitologia);
+        $usuario = User::find($IdUsuario);
+
+        if(!$mitologia){//verifica si existe mitologia
+            $data = [
+                'message' => 'Mitología no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        if(!$usuario){//verifica si existe usuario
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        // DESASOCIA al usuario con la mitología:
+        //usuariosQueGuardaron es el nombre de la funcion en el MODELO Mitologias para
+        //  la relacion muchos a muchos, por eso viene de $mitologia
+        $mitologia->usuariosQueGuardaron()->detach([$usuario->id]);
+        return response()->json([
+            'message' => "Usuario {$usuario->id} desasociado de la mitología {$mitologia->id}"
+        ]);
+    }
+)
+aqui hacemos:
+-Repito solo cambiamos syncWithoutDetaching() por detach()
+-hacemos algunos cambios menores en mensajes de borrar asociacion
+
+creamos la peticion en api
+
+//ruta para desasociar un usuario de una mitologia (quitar mitologia guardada)
+Route::delete('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'detachUser']);
+
+---------------------------
+GET USUARIOS ASOCIADOS A MITOLOGIAS
+lo que obtendremos son todos los usuarios obtenidos a una especifica mitologia bastante similar a los anteriores unir tablas
+
+(
+public function showAttached($IdMitologia)
+    {
+        // Encuentra la mitología y el usuario por sus IDs
+        $mitologia = Mitologias::find($IdMitologia);
+
+        if(!$mitologia){//verifica si existe mitologia
+            $data = [
+                'message' => 'Mitología no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        // Obtiene los usuarios asociados a la mitología y los guarda en la variable $usuarios
+        $usuarios = $mitologia->usuariosQueGuardaron()->select('users.id', 'users.name')->get();
+           return response()->json([
+                'mitologia_id' => $mitologia->id,
+                'usuarios' => $usuarios
+            ]);
+    }
+}
+)
+aqui hacemos:
+-SOLO BUSCAMOS LA MITOLOGIA EN EL ::find
+- Creamos una variable $usuarios para obtener mediante un select todos los usuarios asociados a la mitologia especifica
+- luego usamos las variables en los mensajes
+
+//ruta para obtener todas las mitologias guardadas por un usuario
+Route::get('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'showAttached']);
+
+
 ----
+
 EXPLICACIONES QUE FALTAN EN MITOLOGIAS:
--PODER HACER LA UNION ENTRE TABLAS USER Y MITOLOGIAS (tabla intermedia mitologia_user) 
-AL CREAR DATOS (en logica de aplicacion es que le das a guardar como favorito)
 
 -QUE HACER CON LOS ESPACIOS EN EL CAMPO "Historia" DE MITOLOGIAS es decir al ser una historia hay un orden en el texto que se debe seguir
 con espacios
 
 buen tutorial en youtube https://www.youtube.com/watch?v=eLI8c_NtkBk&t=1165s
+
