@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mitologias;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreMitologiasRequest;
 use App\Http\Requests\UpdateMitologiasRequest;
@@ -251,10 +252,41 @@ class MitologiasController extends Controller
             ];
             return response()->json($data, 404);
         }
-        // Asocia al usuario con la mitología
-        $mitologia->users()->syncWithoutDetaching([$usuario->id]);// Evita duplicados
+        // Asocia al usuario con la mitología:
+        //usuariosQueGuardaron es el nombre de la funcion en el MODELO Mitologias para
+        //  la relacion muchos a muchos, por eso viene de $mitologia
+        $mitologia->usuariosQueGuardaron()->syncWithoutDetaching([$usuario->id]);// Evita duplicados
         return response()->json([
             'message' => "Usuario {$usuario->id} asociado a la mitología {$mitologia->id}"
+        ]);
+    }
+
+     public function DetachUser($IdMitologia, $IdUsuario)
+    {
+        // Encuentra la mitología y el usuario por sus IDs
+        $mitologia = Mitologias::find($IdMitologia);
+        $usuario = User::find($IdUsuario);
+
+        if(!$mitologia){//verifica si existe mitologia
+            $data = [
+                'message' => 'Mitología no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        if(!$usuario){//verifica si existe usuario
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        // DESASOCIA al usuario con la mitología:
+        //usuariosQueGuardaron es el nombre de la funcion en el MODELO Mitologias para
+        //  la relacion muchos a muchos, por eso viene de $mitologia
+        $mitologia->usuariosQueGuardaron()->detach([$usuario->id]);
+        return response()->json([
+            'message' => "Usuario {$usuario->id} desasociado de la mitología {$mitologia->id}"
         ]);
     }
 }
