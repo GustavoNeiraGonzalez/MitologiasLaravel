@@ -261,7 +261,7 @@ class MitologiasController extends Controller
         ]);
     }
 
-     public function detachUser($IdMitologia, $IdUsuario)
+    public function detachUser($IdMitologia, $IdUsuario)
     {
         // Encuentra la mitología y el usuario por sus IDs
         $mitologia = Mitologias::find($IdMitologia);
@@ -288,5 +288,26 @@ class MitologiasController extends Controller
         return response()->json([
             'message' => "Usuario {$usuario->id} desasociado de la mitología {$mitologia->id}"
         ]);
+    }
+
+    //
+    public function showAttached($IdMitologia)
+    {
+        // Encuentra la mitología y el usuario por sus IDs
+        $mitologia = Mitologias::find($IdMitologia);
+
+        if(!$mitologia){//verifica si existe mitologia
+            $data = [
+                'message' => 'Mitología no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        // Obtiene los usuarios asociados a la mitología y los guarda en la variable $usuarios
+        $usuarios = $mitologia->usuariosQueGuardaron()->select('users.id', 'users.name')->get();
+           return response()->json([
+                'mitologia_id' => $mitologia->id,
+                'usuarios' => $usuarios
+            ]);
     }
 }

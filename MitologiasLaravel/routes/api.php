@@ -36,3 +36,5 @@ Route::delete('/users/{id}', [userController::class, 'destroy']);
 Route::post('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'attachUser']);
 //ruta para desasociar un usuario de una mitologia (quitar mitologia guardada)
 Route::delete('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'detachUser']);
+//ruta para obtener todas las mitologias guardadas por un usuario
+Route::get('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'showAttached']);
