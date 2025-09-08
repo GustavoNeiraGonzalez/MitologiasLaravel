@@ -31,3 +31,6 @@ Route::get('/users/{id}', [userController::class, 'show']);
 Route::patch('/users/{id}', [userController::class, 'updatePartial']);
 //ruta eliminar usuario
 Route::delete('/users/{id}', [userController::class, 'destroy']);
+
+//ruta para asociar un usuario a una mitologia (guardar mitologia)
+Route::post('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'attachUser']);

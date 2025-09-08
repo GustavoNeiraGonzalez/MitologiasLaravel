@@ -229,4 +229,32 @@ class MitologiasController extends Controller
         ];
         return response()->json($data, 200);
     }
+
+    //asociar mitologia a usuario (guardar mitologia)
+    public function attachUser($IdMitologia, $IdUsuario)
+    {
+        // Encuentra la mitología y el usuario por sus IDs
+        $mitologia = Mitologias::find($IdMitologia);
+        $usuario = User::find($IdUsuario);
+
+        if(!$mitologia){//verifica si existe mitologia
+            $data = [
+                'message' => 'Mitología no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        if(!$usuario){//verifica si existe usuario
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        // Asocia al usuario con la mitología
+        $mitologia->users()->syncWithoutDetaching([$usuario->id]);// Evita duplicados
+        return response()->json([
+            'message' => "Usuario {$usuario->id} asociado a la mitología {$mitologia->id}"
+        ]);
+    }
 }
