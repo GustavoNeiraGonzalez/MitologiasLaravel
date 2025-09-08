@@ -261,7 +261,7 @@ class MitologiasController extends Controller
         ]);
     }
 
-     public function DetachUser($IdMitologia, $IdUsuario)
+     public function detachUser($IdMitologia, $IdUsuario)
     {
         // Encuentra la mitología y el usuario por sus IDs
         $mitologia = Mitologias::find($IdMitologia);

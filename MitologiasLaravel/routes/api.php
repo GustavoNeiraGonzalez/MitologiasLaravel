@@ -34,3 +34,5 @@ Route::delete('/users/{id}', [userController::class, 'destroy']);
 
 //ruta para asociar un usuario a una mitologia (guardar mitologia)
 Route::post('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'attachUser']);
+//ruta para desasociar un usuario de una mitologia (quitar mitologia guardada)
+Route::delete('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'detachUser']);
