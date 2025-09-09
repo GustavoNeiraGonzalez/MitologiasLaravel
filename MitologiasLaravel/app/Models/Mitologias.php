@@ -11,7 +11,8 @@ class Mitologias extends Model
     use HasFactory;
     protected $fillable = [
         'Historia',
-        'titulo'
+        'titulo',
+        'civilizacion_id'
     ];
 
     public function usuariosQueGuardaron()

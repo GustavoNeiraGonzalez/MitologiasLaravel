@@ -593,6 +593,15 @@ EXPLICACIONES QUE FALTAN EN MITOLOGIAS:
 
 -QUE HACER CON LOS ESPACIOS EN EL CAMPO "Historia" DE MITOLOGIAS es decir al ser una historia hay un orden en el texto que se debe seguir
 con espacios
+-probablemente hacer una funcion para no hacer este codigo cada que quieras verificar que un usuario,mitologia,etc exista
+if(!$usuario){//verifica si existe usuario
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
 
+c
 buen tutorial en youtube https://www.youtube.com/watch?v=eLI8c_NtkBk&t=1165s
 

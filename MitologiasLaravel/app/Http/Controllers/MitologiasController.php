@@ -49,6 +49,7 @@ class MitologiasController extends Controller
         $validator = Validator::make($request->all(), [// Se crean las reglas de validación
             'Historia' => 'required|string|max:4000',
             'titulo' => 'required|string|max:25',
+            'civilizacion_id' => 'required|integer|exists:civilizaciones,id' // Asegura que la civilización exista en la tabla civilizaciones
         ]);
         if ($validator->fails()) {// Verifica si la validación falla
             $data = [
@@ -61,7 +62,8 @@ class MitologiasController extends Controller
         try {
             $mitologias = Mitologias::create([//crea nuevo registro
                 'Historia' => $request->Historia,
-                'titulo' => $request->titulo
+                'titulo' => $request->titulo,
+                'civilizacion_id' => $request->civilizacion_id
             ]);
 
             $data = [//mensaje de exito
@@ -113,6 +115,7 @@ class MitologiasController extends Controller
         $validator = Validator::make($request->all(), [// Se crean las reglas de validación
             'Historia' => 'required|string|max:4000',
             'titulo' => 'required|string|max:25',
+            'civilizacion_id' => 'required|integer|exists:civilizaciones,id' // Asegura que la civilización exista en la tabla civilizaciones
         ]);
         if ($validator->fails()) {// Verifica si la validación falla
             $data = [
@@ -132,6 +135,7 @@ class MitologiasController extends Controller
         try {
             $mitologia->Historia = $request->Historia;//actualiza historia
             $mitologia->titulo = $request->titulo;//actualiza titulo
+            $mitologia->civilizacion_id = $request->civilizacion_id;//actualiza civilizacion
 
             $mitologia->save();//actualiza mitologia
 
@@ -159,6 +163,7 @@ class MitologiasController extends Controller
         $validator = Validator::make($request->all(), [// Se crean las reglas de validación
             'Historia' => '|string|max:4000',
             'titulo' => '|string|max:25',
+            'civilizacion_id' => '|integer|exists:civilizaciones,id' // Asegura que la civilización exista en la tabla civilizaciones
         ]);
         if ($validator->fails()) {// Verifica si la validación falla
             $data = [
@@ -176,7 +181,7 @@ class MitologiasController extends Controller
             return response()->json($data, 404);//retorna mensaje de error
         }
         try {
-            if (!$request->hasAny(['Historia', 'titulo'])) {// Verifica si al menos uno de los campos está presente en la solicitud
+            if (!$request->hasAny(['Historia', 'titulo', 'civilizacion_id'])) {// Verifica si al menos uno de los campos está presente en la solicitud
                 $data = [
                     'message' => 'No se proporcionaron datos para actualizar',
                     'status' => 400
@@ -188,6 +193,9 @@ class MitologiasController extends Controller
             }
             if ($request->has('titulo')) {
                 $mitologia->titulo = $request->titulo;//actualiza titulo
+            }
+            if ($request->has('civilizacion_id')) {
+                $mitologia->civilizacion_id = $request->civilizacion_id;//actualiza civilizacion
             }
             $mitologia->save();//actualiza mitologia
             $data = [//mensaje de exito
