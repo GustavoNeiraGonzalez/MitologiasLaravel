@@ -19,4 +19,8 @@ class Mitologias extends Model
     {
         return $this->belongsToMany(User::class, 'mitologia_user', 'mitologia_id', 'user_id');
     }
+    public function civilizaciones()
+    {
+        return $this->belongsTo(Civilizacion::class);
+    }
 }

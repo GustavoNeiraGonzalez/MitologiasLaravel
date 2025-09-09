@@ -14,25 +14,34 @@ class MitologiasController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+   public function index()
     {
-        //
-        $mitologias = Mitologias::all();//aqui se recupera todos los datos de mitologias y se almacena en data
+        // Trae todas las mitologías con su civilización relacionada
+        $mitologias = Mitologias::with('civilizacion')->get();
+        //with carga la relacion de la tabla civilizaciones definida en el modelo Mitologias
 
-        if ($mitologias->isEmpty()){//aqui se verifica y muestra mensaje error si esta vacia los datos de mitologias
-            $data = [
-                'message' =>'No se encontraron mitologías' ,
-                'status' =>404
-            ];
-            return response()->json($data, 404);
+        if ($mitologias->isEmpty()) {
+            return response()->json([
+                'message' => 'No se encontraron mitologías',
+                'status' => 404
+            ], 404);
         }
-        $data = [
-                'Mitologias' =>$mitologias ,
-                'status' =>200
-            ];
-        return response()->json($data, 200);
-    }
 
+        // Transformar los datos para devolver solo lo que queremos
+        $result = $mitologias->map(function ($mitologia) {
+            return [
+                'id' => $mitologia->id,
+                'titulo' => $mitologia->titulo,
+                'Historia' => $mitologia->Historia,
+                'civilizacion' => $mitologia->civilizacion ? $mitologia->civilizacion->civilizacion : null
+            ];
+        });
+
+        return response()->json([
+            'Mitologias' => $result,
+            'status' => 200
+        ], 200);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -49,7 +58,9 @@ class MitologiasController extends Controller
         $validator = Validator::make($request->all(), [// Se crean las reglas de validación
             'Historia' => 'required|string|max:4000',
             'titulo' => 'required|string|max:25',
-            'civilizacion_id' => 'required|integer|exists:civilizaciones,id' // Asegura que la civilización exista en la tabla civilizaciones
+            'civilizacion_id' => 'required|integer|exists:civilizaciones,id'
+            // Asegura que la civilización exista en la tabla civilizaciones
+            //usando exists:civilizaciones,id (nombre de la tabla y columna)
         ]);
         if ($validator->fails()) {// Verifica si la validación falla
             $data = [
