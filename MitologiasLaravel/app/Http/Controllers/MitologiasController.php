@@ -33,7 +33,7 @@ class MitologiasController extends Controller
                 'id' => $mitologia->id,
                 'titulo' => $mitologia->titulo,
                 'Historia' => $mitologia->Historia,
-                'civilizacion' => $mitologia->civilizacion ? $mitologia->civilizacion->civilizacion : null// operador ternario (? si valor true : no valor false)para
+                'civilizacion' => $mitologia->civilizacion->civilizacion// operador ternario (? si valor true : no valor false)para
                 //  evitar error si no hay civilizacion
             ];
         });
@@ -111,7 +111,7 @@ class MitologiasController extends Controller
         }
         $data = [//muestra mitologia encontrada
             'Mitologia' => $mitologia->titulo,
-            'civilizacion' => $mitologia->civilizacion,
+            'civilizacion' => $mitologia->civilizacion->civilizacion,
             'Historia' => $mitologia->Historia,
             'status' => 200
         ];

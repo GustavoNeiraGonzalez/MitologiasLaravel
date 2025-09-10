@@ -617,7 +617,7 @@ public function index()
                 'id' => $mitologia->id,
                 'titulo' => $mitologia->titulo,
                 'Historia' => $mitologia->Historia,
-                'civilizacion' => $mitologia->civilizacion ? $mitologia->civilizacion->civilizacion : null
+                'civilizacion' => $mitologia->civilizacion->civilizacion
             ];
         });
 
@@ -628,9 +628,11 @@ public function index()
     }
 )
 
-- con ::with('civilizacion')->get() obtendremos los datos en la tabla civilizaciones
-- utilizamos map para mostrar cada mitologia y sus datos correspondientes
-- utilizamos operador ternario (? si valor true : si valor false) el cual es medio innecesario segun la logica del programa de necesitar el id de civilizacion
+- con ::with('civilizacion')->get() obtendremos los datos en la tabla civilizaciones ademas 'civilizacion' viene de la funcion del mismo nombre
+ 	creada en el modelo mitologias para asociar civilizaciones
+- utilizamos map para mostrar cada mitologia y sus datos correspondientes, si fuese solo 1 busqueda no se usaria map
+- y con $mitologia->civilizacion->civilizacion obtenemos el valor llamado civilizacion de la tabla que deseamos (civilizaciones en mysql)
+
 
 
 
