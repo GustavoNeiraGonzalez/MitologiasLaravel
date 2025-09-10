@@ -88,7 +88,8 @@ class CivilizacionController extends Controller
         }
         $data = [
             'Civilizacion' => $civilizacion->civilizacion,
-            'Mitologias' => $civilizacion->Mitologias->map(function($mitologia){
+            'Mitologias' => $civilizacion->Mitologias->map(function($mitologia){//map recorre cada mitologia y
+                // devuelve un nuevo array con los titulos asociados a la civilizacion
                 return [
                     'titulo' => $mitologia->titulo
                 ];
