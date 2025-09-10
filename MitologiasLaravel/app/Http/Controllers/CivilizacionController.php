@@ -125,8 +125,20 @@ class CivilizacionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Civilizacion $civilizacion)
+    public function destroy($id)
     {
         //
+        $civilizacion = Civilizacion::find($id);
+        if (!$civilizacion) {
+            return response()->json(['message' => 'Civilización no encontrada'], 404);
+        }
+        $titulo = $civilizacion->civilizacion;
+        $civilizacion->delete();
+        $data = [
+            'message' => "Civilización eliminada con éxito",
+            'civilizacion' => $titulo,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
     }
 }

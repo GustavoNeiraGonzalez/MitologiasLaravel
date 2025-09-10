@@ -46,3 +46,5 @@ Route::get('/civilizaciones', [CivilizacionController::class, 'index']);
 Route::post('/civilizaciones', [CivilizacionController::class, 'store']);
 //ruta para modificar civilizacion
 Route::put('/civilizaciones/{id}', [CivilizacionController::class, 'update']);
+//ruta para eliminar civilizacion
+Route::delete('/civilizaciones/{id}', [CivilizacionController::class, 'destroy']);
