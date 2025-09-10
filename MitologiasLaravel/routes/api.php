@@ -44,3 +44,5 @@ Route::get('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'sho
 Route::get('/civilizaciones', [CivilizacionController::class, 'index']);
 //ruta para crear civilizacion
 Route::post('/civilizaciones', [CivilizacionController::class, 'store']);
+//ruta para modificar civilizacion
+Route::put('/civilizaciones/{id}', [CivilizacionController::class, 'update']);

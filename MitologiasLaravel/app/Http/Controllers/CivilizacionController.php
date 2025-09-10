@@ -58,7 +58,12 @@ class CivilizacionController extends Controller
             'civilizacion' => 'required|string|max:50|unique:civilizaciones'
             ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+                $data = [
+                    'message' => 'Error de validación',
+                    'errors' => $validator->errors(),
+                    'status' => 422
+                ];
+            return response()->json($data, 422);
         }
         // Crear una nueva civilización
         $civilizacion = Civilizacion::create([
@@ -73,6 +78,7 @@ class CivilizacionController extends Controller
     public function show(Civilizacion $civilizacion)
     {
         //
+
     }
 
     /**
@@ -86,9 +92,34 @@ class CivilizacionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCivilizacionRequest $request, Civilizacion $civilizacion)
+    public function update(Request $request, $id)
     {
-        //
+
+        $civilizaciones = Civilizacion::find($id);//busca civilizacion por id
+
+        if (!$civilizaciones) {//si no existe muestra mensaje error
+            return response()->json(['message' => 'Civilización no encontrada'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [//valida que el campo civilizacion
+            'civilizacion' => 'required|string|max:50|unique:civilizaciones'
+        ]);
+        if ($validator->fails()){
+                $data = [
+                    'message' => 'Error de validación',
+                    'errors' => $validator->errors(),
+                    'status' => 422
+                ];
+            return response()->json($data, 422);
+        }
+        $civilizaciones->civilizacion = $request->civilizacion;//actualiza civilizacion
+        $civilizaciones->save();
+        $data = [
+            'message' => 'Civilización actualizada con éxito',
+            'civilizacion' => $civilizaciones->civilizacion,
+            'status' => 200
+        ];
+        return response()->json($data, 200);
     }
 
     /**
