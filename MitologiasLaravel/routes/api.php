@@ -42,6 +42,8 @@ Route::get('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'sho
 
 //ruta para mostrar todas las civilizaciones con sus mitologias
 Route::get('/civilizaciones', [CivilizacionController::class, 'index']);
+//ruta para mostrar civilizacion por id
+Route::get('/civilizaciones/{id}', [CivilizacionController::class, 'show']);
 //ruta para crear civilizacion
 Route::post('/civilizaciones', [CivilizacionController::class, 'store']);
 //ruta para modificar civilizacion

@@ -75,9 +75,27 @@ class CivilizacionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Civilizacion $civilizacion)
+    public function show($id)
     {
         //
+        $civilizacion = Civilizacion::with('Mitologias')->find($id);//busca civilizacion por id y con sus mitologias
+        if (!$civilizacion) {//si no existe muestra mensaje error
+            $data = [
+                'message' => 'Civilización no encontrada',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $data = [
+            'Civilizacion' => $civilizacion->civilizacion,
+            'Mitologias' => $civilizacion->Mitologias->map(function($mitologia){
+                return [
+                    'titulo' => $mitologia->titulo
+                ];
+            }),
+            'status' => 200
+        ];
+        return response()->json($data, 200);
 
     }
 
