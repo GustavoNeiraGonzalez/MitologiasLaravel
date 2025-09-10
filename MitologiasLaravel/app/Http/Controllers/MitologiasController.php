@@ -14,7 +14,7 @@ class MitologiasController extends Controller
     /**
      * Display a listing of the resource.
      */
-   public function index()
+    public function index()
     {
         // Trae todas las mitologías con su civilización relacionada
         $mitologias = Mitologias::with('civilizacion')->get();
@@ -33,7 +33,8 @@ class MitologiasController extends Controller
                 'id' => $mitologia->id,
                 'titulo' => $mitologia->titulo,
                 'Historia' => $mitologia->Historia,
-                'civilizacion' => $mitologia->civilizacion ? $mitologia->civilizacion->civilizacion : null
+                'civilizacion' => $mitologia->civilizacion ? $mitologia->civilizacion->civilizacion : null// operador ternario (? si valor true : no valor false)para
+                //  evitar error si no hay civilizacion
             ];
         });
 
@@ -100,7 +101,7 @@ class MitologiasController extends Controller
     public function show($id)
     {
         //
-        $mitologia = Mitologias::find($id);//busca mitologia por id
+        $mitologia = Mitologias::with('civilizacion')->find($id);//busca mitologia por id y trae su civilizacion relacionada
         if (!$mitologia) {//verifica si existe la mitologia
             $data = [
                 'message' => 'Mitología no encontrada',
@@ -109,7 +110,9 @@ class MitologiasController extends Controller
             return response()->json($data, 404);
         }
         $data = [//muestra mitologia encontrada
-            'Mitologia' => $mitologia,
+            'Mitologia' => $mitologia->titulo,
+            'civilizacion' => $mitologia->civilizacion,
+            'Historia' => $mitologia->Historia,
             'status' => 200
         ];
         return response()->json($data, 200);//retorna mensaje de exito

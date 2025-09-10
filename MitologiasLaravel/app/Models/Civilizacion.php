@@ -10,7 +10,7 @@ class Civilizacion extends Model
     /** @use HasFactory<\Database\Factories\CivilizacionFactory> */
     use HasFactory;
     protected $table = 'civilizaciones'; // <- nombre real de tu tabla en la
-    // base de datos
+    // base de datos para que no se confunda laravel poniendo 'civilizacions'
 
     protected $fillable = ['civilizacion'];//campos que se pueden llenar
 

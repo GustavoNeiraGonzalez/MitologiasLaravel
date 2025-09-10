@@ -25,7 +25,7 @@ DB_DATABASE=MitologiasLaravel
 DB_USERNAME=root
 DB_PASSWORD=
 
----
+------------
 crear tablas de datos
 
 antes de poder usar datos en tu bd tienes que crear datos personalizados segun tus necesidades
@@ -55,6 +55,9 @@ e historia es tipo TEXT porque text permite mas caracteres que un STRING
 
 luego ejecutar:
 php artisan migrate
+
+
+
 
 -------------------------
 ERROR DE LOGICA
@@ -587,8 +590,52 @@ aqui hacemos:
 Route::get('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'showAttached']);
 
 
-----
+---------------
+GET CON DATOS DE OTRAS TABLAS
 
+fuera de las instrucciones creamos una tabla civilizaciones para evitar duplicacion de datos con mitologia
+lo que haremos aqui es modificar index para traer los datos de mitologias y en lugar de civilizacion_id buscamos la civilizacion
+asociada a esa id 
+
+(
+public function index()
+    {
+        // Trae todas las mitologías con su civilización relacionada
+        $mitologias = Mitologias::with('civilizacion')->get();
+        //with carga la relacion de la tabla civilizaciones definida en el modelo Mitologias
+
+        if ($mitologias->isEmpty()) {
+            return response()->json([
+                'message' => 'No se encontraron mitologías',
+                'status' => 404
+            ], 404);
+        }
+
+        // Transformar los datos para devolver solo lo que queremos
+        $result = $mitologias->map(function ($mitologia) {
+            return [
+                'id' => $mitologia->id,
+                'titulo' => $mitologia->titulo,
+                'Historia' => $mitologia->Historia,
+                'civilizacion' => $mitologia->civilizacion ? $mitologia->civilizacion->civilizacion : null
+            ];
+        });
+
+        return response()->json([
+            'Mitologias' => $result,
+            'status' => 200
+        ], 200);
+    }
+)
+
+- con ::with('civilizacion')->get() obtendremos los datos en la tabla civilizaciones
+- utilizamos map para mostrar cada mitologia y sus datos correspondientes
+- utilizamos operador ternario (? si valor true : si valor false) el cual es medio innecesario segun la logica del programa de necesitar el id de civilizacion
+
+
+
+
+---
 EXPLICACIONES QUE FALTAN EN MITOLOGIAS:
 
 -QUE HACER CON LOS ESPACIOS EN EL CAMPO "Historia" DE MITOLOGIAS es decir al ser una historia hay un orden en el texto que se debe seguir
