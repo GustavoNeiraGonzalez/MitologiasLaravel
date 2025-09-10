@@ -40,4 +40,7 @@ Route::delete('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasControll
 //ruta para obtener todas las mitologias guardadas por un usuario
 Route::get('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'showAttached']);
 
+//ruta para mostrar todas las civilizaciones con sus mitologias
 Route::get('/civilizaciones', [CivilizacionController::class, 'index']);
+//ruta para crear civilizacion
+Route::post('/civilizaciones', [CivilizacionController::class, 'store']);

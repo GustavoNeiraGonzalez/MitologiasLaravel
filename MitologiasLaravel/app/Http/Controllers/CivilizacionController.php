@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Civilizacion;
 use App\Http\Requests\StoreCivilizacionRequest;
 use App\Http\Requests\UpdateCivilizacionRequest;
+use Illuminate\Support\Facades\Validator;
 
 class CivilizacionController extends Controller
 {
@@ -50,9 +51,20 @@ class CivilizacionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCivilizacionRequest $request)
+    public function store(Request $request)
     {
         //
+        $validator = Validator::make($request->all(),[
+            'civilizacion' => 'required|string|max:50|unique:civilizaciones'
+            ]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        // Crear una nueva civilización
+        $civilizacion = Civilizacion::create([
+            'civilizacion' => $request->civilizacion
+        ]);
+        return response()->json($civilizacion, 201);
     }
 
     /**
