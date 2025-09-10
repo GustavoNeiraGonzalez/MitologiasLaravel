@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MitologiasController;
 use App\Http\Controllers\userController;
+use App\Http\Controllers\CivilizacionController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -38,3 +39,5 @@ Route::post('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController
 Route::delete('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'detachUser']);
 //ruta para obtener todas las mitologias guardadas por un usuario
 Route::get('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'showAttached']);
+
+Route::get('/civilizaciones', [CivilizacionController::class, 'index']);
