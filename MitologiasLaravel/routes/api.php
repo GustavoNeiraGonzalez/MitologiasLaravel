@@ -8,7 +8,10 @@ use App\Http\Controllers\CivilizacionController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
-})->middleware('auth:sanctum');
+})->middleware('auth:sanctum');//protege la ruta para que solo usuarios autenticados puedan acceder
+
+Route::post('/login', [userController::class, 'login']);
+
 
 //ruta para mostrar todas las mitologias
 Route::get('/mitologias', [MitologiasController::class, 'index']);

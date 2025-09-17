@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class userController extends Controller
 {
@@ -145,5 +146,25 @@ class userController extends Controller
             'status' => 200
         ]);
         return response()->json($data, 200);
+    }
+
+    //-----------------------------------autenticacion-----------------------------------
+    public function login(Request $request){
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+
+            $data = ([
+                'message' => 'Credenciales incorrectas',
+                'status'=>401
+            ]);
+            return response()->json($data,401);
+        }else{
+            return response()->json([
+                'message' => 'Inicio de sesión exitoso',
+
+                'status' => 200
+            ], 200);
+        }
     }
 }
