@@ -150,19 +150,34 @@ class userController extends Controller
 
     //-----------------------------------autenticacion-----------------------------------
     public function login(Request $request){
-        $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-
+        $validator = Validator::make($request->all(),[
+            'email' => 'required|string|email|max:50',
+            'password' => 'required|string|min:8'
+        ]);
+        if($validator->fails()) {
             $data = ([
+                'message' => 'error de validacion',
+                'errors' => $validator->errors(),
+                'status'=>422
+            ]);
+            return response()->json($data,422);
+        }
+        $user = User::where('email', $request->email)->first();//busca el usuario por email
+
+        if (!$user || !Hash::check($request->password, $user->password)) {//verifica si el usuario existe y si la contraseña es correcta
+
+            $data = ([//si las credenciales son incorrectas
                 'message' => 'Credenciales incorrectas',
                 'status'=>401
             ]);
             return response()->json($data,401);
-        }else{
+        }else{//si las credenciales son correctas
+            $token = $user->createToken('auth_token')->plainTextToken;//crea un token de autenticacion
+
             return response()->json([
                 'message' => 'Inicio de sesión exitoso',
-
+                'access_token' => $token,
                 'status' => 200
             ], 200);
         }
