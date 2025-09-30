@@ -10,11 +10,15 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');//protege la ruta para que solo usuarios autenticados puedan acceder
 
-Route::post('/login', [userController::class, 'login']);
+Route::post('/login', [userController::class, 'login'])->name('login');
 
 
 //ruta para mostrar todas las mitologias
-Route::get('/mitologias', [MitologiasController::class, 'index']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/mitologias', [MitologiasController::class, 'index']);
+    Route::post('/logout', [userController::class, 'logout']);
+
+});
 //ruta para crear mitologia
 Route::post('/mitologias', [MitologiasController::class, 'store']);
 //ruta para mostrar mitologia por id

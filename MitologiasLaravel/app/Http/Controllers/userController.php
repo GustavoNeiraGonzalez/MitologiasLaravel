@@ -178,8 +178,25 @@ class userController extends Controller
             return response()->json([
                 'message' => 'Inicio de sesión exitoso',
                 'access_token' => $token,
+                'token_type' => 'Bearer',
                 'status' => 200
             ], 200);
         }
+    }
+
+    public function logout(Request $request){
+        if (! $request->user()) {
+            $data = ([
+                'message' => 'No autenticado',
+                'status' => 401
+            ]);
+            return response()->json($data, 401);
+        }
+        $request->user()->currentAccessToken()->delete();//elimina el token de autenticacion actual
+        $data = ([
+            'message' => 'Cierre de sesión exitoso',
+            'status' => 200
+        ]);
+        return response()->json($data, 200);
     }
 }
