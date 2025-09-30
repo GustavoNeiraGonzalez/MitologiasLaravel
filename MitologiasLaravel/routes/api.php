@@ -10,7 +10,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');//protege la ruta para que solo usuarios autenticados puedan acceder
 
-Route::post('/login', [userController::class, 'login'])->name('login');
+Route::post('/login', [userController::class, 'login']);
 
 
 //ruta para mostrar todas las mitologias

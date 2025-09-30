@@ -637,7 +637,146 @@ public function index()
 
 
 
----
+-----------------------
+SANCTUM PARA AUTENTICAR USUARIO EN UNA API REST
+
+-primero la instalacion:
+
+composer require laravel/sanctum
+
+-LUEGO LA CREACION DE LA TABLA PARA LOS TOKENS:
+
+php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+php artisan migrate
+
+AHORA DENTRO DE MODELS/USERS llamamos los tokens y luego agregamos los mismos dentro de use ....;
+
+use Laravel\Sanctum\HasApiTokens;
+
+...
+
+use HasApiTokens, HasFactory, Notifiable;
+
+
+
+ahora creamos un inicio de sesion en usercontroller: importamos hash
+
+use Illuminate\Support\Facades\Hash;
+
+  public function login(Request $request){
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+
+            $data = ([
+                'message' => 'Credenciales incorrectas',
+                'status'=>401
+            ]);
+            return response()->json($data,401);
+        }else{
+            return response()->json([
+                'message' => 'Inicio de sesión exitoso',
+
+                'status' => 200
+            ], 200);
+        }
+
+aqui estamos solo verificando que los datos sean correctos 
+y ahora creamos la api para verlo:
+
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');//protege la ruta para que solo usuarios autenticados puedan acceder
+
+Route::post('/login', [userController::class, 'login']);
+
+ahora sabiendo que funciona correctamente la verificacion de datos
+haremos lo siguiente: 
+-poner requerimientos en los datos enviados con require
+-crear un token y enviarlo en el mensaje de inicio sesion exitoso
+ 
+public function login(Request $request){
+
+        $validator = Validator::make($request->all(),[
+            'email' => 'required|string|email|max:50',
+            'password' => 'required|string|min:8'
+        ]);
+        if($validator->fails()) {
+            $data = ([
+                'message' => 'error de validacion',
+                'errors' => $validator->errors(),
+                'status'=>422
+            ]);
+            return response()->json($data,422);
+        }
+        $user = User::where('email', $request->email)->first();//busca el usuario por email
+
+        if (!$user || !Hash::check($request->password, $user->password)) {//verifica si el usuario existe y si la contraseña es correcta
+
+            $data = ([//si las credenciales son incorrectas
+                'message' => 'Credenciales incorrectas',
+                'status'=>401
+            ]);
+            return response()->json($data,401);
+        }else{//si las credenciales son correctas
+            $token = $user->createToken('auth_token')->plainTextToken;//crea un token de autenticacion
+
+            return response()->json([
+                'message' => 'Inicio de sesión exitoso',
+                'access_token' => $token,
+		'token_type' => 'Bearer',
+                'status' => 200
+            ], 200);
+}
+
+ahora finalmente verifica los datos se crea un token y se envia correctamente en el mensaje de exito
+
+--------------------------------------------------
+LOGOUT
+
+EN EL CONTROLADOR:
+
+ public function logout(Request $request){
+        if (! $request->user()) {
+            $data = ([
+                'message' => 'No autenticado',
+                'status' => 401
+            ]);
+            return response()->json($data, 401);
+        }
+        $request->user()->currentAccessToken()->delete();//elimina el token de autenticacion actual
+        $data = ([
+            'message' => 'Cierre de sesión exitoso',
+            'status' => 200
+        ]);
+        return response()->json($data, 200);
+    }
+
+EN API CREAMOS LA RUTA
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/mitologias', [MitologiasController::class, 'index']);
+    Route::post('/logout', [userController::class, 'logout']);
+
+});
+
+AQUI AGREGAMOS TAMBIEN MITOLOGIAS PARA PROBAR QUE FUNCIONE FUERA DE USERCONTROLLER
+
+ACLARACIONES:
+
+EL TOKEN SE ENVIA DESDE EL FRONT END USANDO EL HEADER, NO DESDE EL BACK END
+
+HAY ERROR POCO CLARO AL hacer la peticion y no tener dentro de thunder client en headers -> accept - application/json, IMPORTANTE TENERLO ASI
+PORQUE EL ERROR, REPITO ES MUY POCO CLARO
+
+
+
+
+
+
+
+
+----------------------
 EXPLICACIONES QUE FALTAN EN MITOLOGIAS:
 
 -QUE HACER CON LOS ESPACIOS EN EL CAMPO "Historia" DE MITOLOGIAS es decir al ser una historia hay un orden en el texto que se debe seguir
