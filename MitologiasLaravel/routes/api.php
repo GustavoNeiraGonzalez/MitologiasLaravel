@@ -15,45 +15,59 @@ Route::post('/login', [userController::class, 'login']);
 
 //ruta para mostrar todas las mitologias
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/mitologias', [MitologiasController::class, 'index']);
     Route::post('/logout', [userController::class, 'logout']);
-
 });
 //ruta para crear mitologia
 Route::post('/mitologias', [MitologiasController::class, 'store']);
 //ruta para mostrar mitologia por id
 Route::get('/mitologias/{id}', [MitologiasController::class, 'show']);
-//ruta para actualizar mitologia por id
-Route::put('/mitologias/{id}', [MitologiasController::class, 'update']);
-//ruta para actualizar parcialmente la mitologia por id
-Route::patch('/mitologias/{id}', [MitologiasController::class, 'updatePartial']);
-//ruta para eliminar mitologia por id
-Route::delete('/mitologias/{id}', [MitologiasController::class, 'destroy']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    //protege las rutas para que solo usuarios autenticados puedan realizar estas acciones
+    //ruta para actualizar mitologia por id
+    Route::put('/mitologias/{id}', [MitologiasController::class, 'update']);
+    //ruta para actualizar parcialmente la mitologia por id
+    Route::patch('/mitologias/{id}', [MitologiasController::class, 'updatePartial']);
+    //ruta para eliminar mitologia por id
+    Route::delete('/mitologias/{id}', [MitologiasController::class, 'destroy']);
+});
+
 
 Route::get('/users', [userController::class, 'index']);
 //ruta para crear  user
 Route::post('/users', [userController::class, 'store']);
 //Ruta para mostrar user por id
 Route::get('/users/{id}', [userController::class, 'show']);
-//Ruta modificar parcialmente usuario (no correo)
-Route::patch('/users/{id}', [userController::class, 'updatePartial']);
-//ruta eliminar usuario
-Route::delete('/users/{id}', [userController::class, 'destroy']);
 
-//ruta para asociar un usuario a una mitologia (guardar mitologia)
-Route::post('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'attachUser']);
-//ruta para desasociar un usuario de una mitologia (quitar mitologia guardada)
-Route::delete('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'detachUser']);
-//ruta para obtener todas las mitologias guardadas por un usuario
-Route::get('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'showAttached']);
+Route::middleware('auth:sanctum')->group(function () {
+    //Ruta modificar parcialmente usuario (no correo)
+    Route::patch('/users/{id}', [userController::class, 'updatePartial']);
+    //ruta eliminar usuario
+    Route::delete('/users/{id}', [userController::class, 'destroy']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    //ruta para asociar un usuario a una mitologia (guardar mitologia)
+    Route::post('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'attachUser']);
+    //ruta para desasociar un usuario de una mitologia (quitar mitologia guardada)
+    Route::delete('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'detachUser']);
+    //ruta para obtener todas las mitologias guardadas por un usuario
+    Route::get('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'showAttached']);
+
+});
+
 
 //ruta para mostrar todas las civilizaciones con sus mitologias
 Route::get('/civilizaciones', [CivilizacionController::class, 'index']);
 //ruta para mostrar civilizacion por id
 Route::get('/civilizaciones/{id}', [CivilizacionController::class, 'show']);
-//ruta para crear civilizacion
-Route::post('/civilizaciones', [CivilizacionController::class, 'store']);
-//ruta para modificar civilizacion
-Route::put('/civilizaciones/{id}', [CivilizacionController::class, 'update']);
-//ruta para eliminar civilizacion
-Route::delete('/civilizaciones/{id}', [CivilizacionController::class, 'destroy']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    //ruta para crear civilizacion
+    Route::post('/civilizaciones', [CivilizacionController::class, 'store']);
+    //ruta para modificar civilizacion
+    Route::put('/civilizaciones/{id}', [CivilizacionController::class, 'update']);
+    //ruta para eliminar civilizacion
+    Route::delete('/civilizaciones/{id}', [CivilizacionController::class, 'destroy']);
+
+});
