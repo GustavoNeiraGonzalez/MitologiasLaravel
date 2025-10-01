@@ -650,17 +650,17 @@ php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 php artisan migrate
 
 AHORA DENTRO DE MODELS/USERS llamamos los tokens y luego agregamos los mismos dentro de use ....;
-
+(
 use Laravel\Sanctum\HasApiTokens;
 
 ...
 
 use HasApiTokens, HasFactory, Notifiable;
-
+)
 
 
 ahora creamos un inicio de sesion en usercontroller: importamos hash
-
+(
 use Illuminate\Support\Facades\Hash;
 
   public function login(Request $request){
@@ -680,21 +680,21 @@ use Illuminate\Support\Facades\Hash;
                 'status' => 200
             ], 200);
         }
-
+)
 aqui estamos solo verificando que los datos sean correctos 
 y ahora creamos la api para verlo:
-
+(
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');//protege la ruta para que solo usuarios autenticados puedan acceder
 
 Route::post('/login', [userController::class, 'login']);
-
+)
 ahora sabiendo que funciona correctamente la verificacion de datos
 haremos lo siguiente: 
 -poner requerimientos en los datos enviados con require
 -crear un token y enviarlo en el mensaje de inicio sesion exitoso
- 
+( 
 public function login(Request $request){
 
         $validator = Validator::make($request->all(),[
@@ -728,14 +728,14 @@ public function login(Request $request){
                 'status' => 200
             ], 200);
 }
-
+)
 ahora finalmente verifica los datos se crea un token y se envia correctamente en el mensaje de exito
 
 --------------------------------------------------
 LOGOUT
 
 EN EL CONTROLADOR:
-
+(
  public function logout(Request $request){
         if (! $request->user()) {
             $data = ([
@@ -759,7 +759,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [userController::class, 'logout']);
 
 });
-
+)
 AQUI AGREGAMOS TAMBIEN MITOLOGIAS PARA PROBAR QUE FUNCIONE FUERA DE USERCONTROLLER
 
 ACLARACIONES:
@@ -769,9 +769,37 @@ EL TOKEN SE ENVIA DESDE EL FRONT END USANDO EL HEADER, NO DESDE EL BACK END
 HAY ERROR POCO CLARO AL hacer la peticion y no tener dentro de thunder client en headers -> accept - application/json, IMPORTANTE TENERLO ASI
 PORQUE EL ERROR, REPITO ES MUY POCO CLARO
 
+--------------------------------------------
+SPATIE PARA TENER PERMISOS Y ROLES EN USUARIOS Y ASI PROTEGER CIERTAS PETICIONES
+
+-primero instalamos spatie
+ 
+	composer require spatie/laravel-permission
+
+-luego hacemos la migarcion de spatie con
+
+	php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+
+-esto es opcional
+
+	 php artisan optimize:clear
+
+-luego corremos la migracion
+
+	 php artisan migrate
 
 
 
+dentro del modelo user tenemos que importar hasroles y luego usarlo en use, en nuestro caso lo agregamos dentro de todo lo que hemos agregado
+antes en use y se veria algo asi 
+(
+use Spatie\Permission\Traits\HasRoles;
+
+class User extends Authenticatable
+{
+   use HasRoles,HasApiTokens, HasFactory, Notifiable;
+...
+)
 
 
 
