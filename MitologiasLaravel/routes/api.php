@@ -55,7 +55,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'detachUser']);
     //ruta para obtener todas las mitologias guardadas por un usuario
     Route::get('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'showAttached']);
-
+    //ruta para obtener todas las mitologias guardadas por un usuario
+    Route::get('/user/{IdUser}/mitologias', [userController::class, 'showAttached']);
 });
 
 

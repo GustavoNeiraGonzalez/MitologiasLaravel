@@ -148,6 +148,31 @@ class userController extends Controller
         return response()->json($data, 200);
     }
 
+    //----------------------------------show mitologias guardadas por usuario-----------------------------------
+    public function showAttached($id){
+        $user = User::find($id);
+        if(!$user){
+            $data = ([
+                'message' => 'usuario no encontrado',
+                'status'=>404
+            ]);
+            return response()->json($data,404);
+        }
+        $mitologias = $user->mitologiasGuardadas()->select('mitologias.id', 'mitologias.titulo')->get();
+        if($mitologias->isEmpty()){
+            $data = ([
+                'message' => 'El usuario no tiene mitologias guardadas',
+                'status'=>404
+            ]);
+            return response()->json($data,404);
+        }
+        $data = ([
+            'user' => $user->name,
+            'mitologias guardadas' => $mitologias->pluck('titulo'),
+            'status' => 200
+        ]);
+        return response()->json($data, 200);
+    }
     //-----------------------------------autenticacion-----------------------------------
     public function login(Request $request){
 
