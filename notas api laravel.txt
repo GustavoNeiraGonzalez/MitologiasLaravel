@@ -801,8 +801,58 @@ class User extends Authenticatable
 ...
 )
 
+------------------------
+CREANDO ROLES Y PERMISOS
+
+bien, ahora lo que necesitamos es hacer un seeder para crear los roles y permisos que usaremos
+
+php artisan make:seeder UserRolSeeder
 
 
+ahora dentro del seeder en database/seeder/userolseeder
+importaremos estas 2 lineas y crearemos nuestros roles y permisos dentro de run():void
+
+(
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+
+
+class UserRolSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        // Roles que quieres asegurar que existan
+        $roles = ['admin', 'editor', 'user'];
+	
+	// con firstOrCreate evitaremos duplicados
+        foreach ($roles as $roleName) {
+            Role::firstOrCreate(['name' => $roleName]);
+        }
+
+        // Opcional: crear permisos
+        $permissions = ['create posts', 'edit posts', 'delete posts'];
+        foreach ($permissions as $perm) {
+            Permission::firstOrCreate(['name' => $perm]);
+        }
+
+        // Opcional: dar todos los permisos al admin pero en este caso si lo queremos
+        $admin = Role::firstOrCreate(['name' => 'admin']);
+        $admin->givePermissionTo($permissions);
+
+    }
+}
+
+)
+simple, hacemos una variable roles, luego con un for crearemos cada rol lo mismo con permissions
+luego daremos estos permisos al rol admin
+y solo nos queda ejecutar el seeder :
+
+php artisan db:seed --class=UserRolSeeder
+
+ahora solo nos queda asignar los roles a un usuario por controlador y luego proteger estas rutas por los roles
 
 ----------------------
 EXPLICACIONES QUE FALTAN EN MITOLOGIAS:

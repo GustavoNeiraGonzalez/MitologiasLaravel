@@ -17,6 +17,8 @@ Route::post('/login', [userController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [userController::class, 'logout']);
 });
+
+Route::get('/mitologias', [MitologiasController::class, 'index']);
 //ruta para crear mitologia
 Route::post('/mitologias', [MitologiasController::class, 'store']);
 //ruta para mostrar mitologia por id
