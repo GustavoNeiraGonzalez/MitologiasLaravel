@@ -329,7 +329,8 @@ class MitologiasController extends Controller
         $usuarios = $mitologia->usuariosQueGuardaron()->select('users.id', 'users.name')->get();
            return response()->json([
                 'mitologia_id' => $mitologia->id,
-                'usuarios' => $usuarios
+                'usuarios' => $usuarios->pluck('name'), //pluck extrae solo los nombres de los usuarios y no toda la info
+                'status' => 200
             ]);
     }
 }

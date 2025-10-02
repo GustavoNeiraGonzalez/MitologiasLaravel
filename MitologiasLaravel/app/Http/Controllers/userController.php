@@ -168,6 +168,7 @@ class userController extends Controller
         }
         $data = ([
             'user' => $user->name,
+            'user_id' => $user->id,
             'mitologias guardadas' => $mitologias->pluck('titulo'),
             'status' => 200
         ]);
