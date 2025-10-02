@@ -254,32 +254,19 @@ class MitologiasController extends Controller
     }
 
     //asociar mitologia a usuario (guardar mitologia)
-    public function attachUser($IdMitologia, $IdUsuario)
+    public function attachUser(Request $request, $IdMitologia)
     {
-        // Encuentra la mitología y el usuario por sus IDs
         $mitologia = Mitologias::find($IdMitologia);
-        $usuario = User::find($IdUsuario);
 
-        if(!$mitologia){//verifica si existe mitologia
-            $data = [
-                'message' => 'Mitología no encontrada',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
+        if (!$mitologia) {
+            return response()->json(['message' => 'Mitología no encontrada'], 404);
         }
-        if(!$usuario){//verifica si existe usuario
-            $data = [
-                'message' => 'Usuario no encontrado',
-                'status' => 404
-            ];
-            return response()->json($data, 404);
-        }
-        // Asocia al usuario con la mitología:
-        //usuariosQueGuardaron es el nombre de la funcion en el MODELO Mitologias para
-        //  la relacion muchos a muchos, por eso viene de $mitologia
-        $mitologia->usuariosQueGuardaron()->syncWithoutDetaching([$usuario->id]);// Evita duplicados
+
+        // Asociar al usuario autenticado
+        $request->user()->mitologiasGuardadas()->syncWithoutDetaching([$IdMitologia]);
+
         return response()->json([
-            'message' => "Usuario {$usuario->id} asociado a la mitología {$mitologia->id}"
+            'message' => "La mitología {$mitologia->id} fue asociada al usuario autenticado ({$request->user()->id})"
         ]);
     }
 

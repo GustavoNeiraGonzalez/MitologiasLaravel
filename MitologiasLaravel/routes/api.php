@@ -50,12 +50,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     //ruta para asociar un usuario a una mitologia (guardar mitologia)
-    Route::post('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'attachUser']);
+    Route::post('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'attachUser']);
     //ruta para desasociar un usuario de una mitologia (quitar mitologia guardada)
     Route::delete('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'detachUser']);
-    //ruta para obtener todas las mitologias guardadas por un usuario
+    //ruta para obtener TODOS los usuarios que han guardado una mitologia ESPECIFICA
     Route::get('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'showAttached']);
-    //ruta para obtener todas las mitologias guardadas por un usuario
+    //ruta para obtener todas las mitologias guardadas por un usuario especifico
     Route::get('/user/{IdUser}/mitologias', [userController::class, 'showAttached']);
 });
 
