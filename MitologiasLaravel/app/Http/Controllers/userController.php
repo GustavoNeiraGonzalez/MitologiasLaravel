@@ -122,7 +122,7 @@ class userController extends Controller
         ]);
         return response()->json($data, 200);
     }
-
+    // eliminar el usuario autenticado
     public function destroyOwnUser(){
         $user = auth()->user();//obtiene el usuario autenticado a traves del token
         if(!$user){
@@ -141,13 +141,33 @@ class userController extends Controller
         ]);
         return response()->json($data, 200);
     }
-
-    //----------------------------------show mitologias guardadas por usuario-----------------------------------
-    public function showAttached($id){
-        $user = User::find($id);
+    // eliminar usuario por id (solo admin)
+    public function destroyOtherUser($id){
+        $user = User::find($id);//busca el usuario por id
         if(!$user){
             $data = ([
                 'message' => 'usuario no encontrado',
+                'status'=>404
+            ]);
+            return response()->json($data,404);
+        }
+        $name = $user->name;//almacena el nombre del usuario antes de eliminarlo
+        $user->delete();
+        $data = ([
+            'message' => 'Usuario eliminado con éxito',
+            'user' => $name,
+            'status' => 200
+        ]);
+        return response()->json($data, 200);
+    }
+
+
+    //----------------------------------show mitologias guardadas por usuario-----------------------------------
+    public function showAttached(){
+        $user = auth()->user();//obtiene el usuario autenticado a traves del token
+        if(!$user){
+            $data = ([
+                'message' => 'usuario necesita iniciar sesión',
                 'status'=>404
             ]);
             return response()->json($data,404);

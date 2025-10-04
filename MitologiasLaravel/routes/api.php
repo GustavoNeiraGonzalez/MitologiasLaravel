@@ -44,19 +44,22 @@ Route::get('/users/{id}', [userController::class, 'show']);
 Route::middleware('auth:sanctum')->group(function () {
     //Ruta modificar parcialmente usuario (no correo)
     Route::patch('/users/{id}', [userController::class, 'updatePartial']);
-    //ruta eliminar usuario
-    Route::delete('/users/{id}', [userController::class, 'destroy']);
+    //ruta eliminar usuario autenticado
+    Route::delete('/users/me', [userController::class, 'destroyOwnUser']);
+
+    //ruta eliminar usuario por id (solo admin)
+    Route::delete('/users/{id}', [userController::class, 'destroyOtherUser']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
     //ruta para asociar un usuario a una mitologia (guardar mitologia)
     Route::post('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'attachUser']);
     //ruta para desasociar un usuario de una mitologia (quitar mitologia guardada)
-    Route::delete('/mitologias/{IdMitologia}/users/{IdUsuario}', [MitologiasController::class, 'detachUser']);
+    Route::delete('/mitologias/{IdMitologia}/users/', [MitologiasController::class, 'detachUser']);
     //ruta para obtener TODOS los usuarios que han guardado una mitologia ESPECIFICA
     Route::get('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'showAttached']);
     //ruta para obtener todas las mitologias guardadas por un usuario especifico
-    Route::get('/user/{IdUser}/mitologias', [userController::class, 'showAttached']);
+    Route::get('/user/mitologias', [userController::class, 'showAttached']);
 });
 
 

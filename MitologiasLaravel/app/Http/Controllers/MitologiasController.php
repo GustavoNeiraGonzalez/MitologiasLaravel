@@ -270,11 +270,11 @@ class MitologiasController extends Controller
         ]);
     }
 
-    public function detachUser($IdMitologia, $IdUsuario)
+    public function detachUser($IdMitologia)
     {
         // Encuentra la mitología y el usuario por sus IDs
         $mitologia = Mitologias::find($IdMitologia);
-        $usuario = User::find($IdUsuario);
+        $usuario = auth()->user(); // Obtiene el usuario autenticado
 
         if(!$mitologia){//verifica si existe mitologia
             $data = [
@@ -285,7 +285,7 @@ class MitologiasController extends Controller
         }
         if(!$usuario){//verifica si existe usuario
             $data = [
-                'message' => 'Usuario no encontrado',
+                'message' => 'Se necesita iniciar sesión',
                 'status' => 404
             ];
             return response()->json($data, 404);

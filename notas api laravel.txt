@@ -854,6 +854,29 @@ php artisan db:seed --class=UserRolSeeder
 
 ahora solo nos queda asignar los roles a un usuario por controlador y luego proteger estas rutas por los roles
 
+-------------------------------------
+MEJORAR PETICIONES QUE REQUIERAN DATOS O MODIFIQUEN DATOS DEL USUARIO QUE HA INICIADO SESION
+
+en lugar de buscar user por id, usamos el usuario logeado (gracias a los tokens en sanctum)
+
+en lugar de   $user = User::find($id); haremos lo siguiente
+
+(
+  $user = auth()->user();
+   ....
+
+   if(!$user){
+            $data = ([
+                'message' => 'se necesita iniciar sesión',
+                'status'=>404
+            ]);
+  }
+  ....
+)
+
+aqui buscamos el usuario logeado a traves de auth()->user(); 
+y usamos un if para ver si nos devuelve el usuario logeado
+(de esta manera no haremos cosas raras usando el usuario logeado y solo haremos que funcione como lo hacia por id)
 ----------------------
 EXPLICACIONES QUE FALTAN EN MITOLOGIAS:
 
