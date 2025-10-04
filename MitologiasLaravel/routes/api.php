@@ -19,13 +19,13 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::get('/mitologias', [MitologiasController::class, 'index']);
-//ruta para crear mitologia
-Route::post('/mitologias', [MitologiasController::class, 'store']);
 //ruta para mostrar mitologia por id
 Route::get('/mitologias/{id}', [MitologiasController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
     //protege las rutas para que solo usuarios autenticados puedan realizar estas acciones
+    //ruta para crear mitologia
+    Route::post('/mitologias', [MitologiasController::class, 'store']);
     //ruta para actualizar mitologia por id
     Route::put('/mitologias/{id}', [MitologiasController::class, 'update']);
     //ruta para actualizar parcialmente la mitologia por id

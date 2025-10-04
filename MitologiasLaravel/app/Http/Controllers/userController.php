@@ -83,7 +83,7 @@ class userController extends Controller
 
     }
 
-    public function updatePartial(Request $request, $id){
+    public function updatePartial(Request $request){
         $VALIDATOR = Validator::make($request->all(),[
             'name' => '|string|max:30',
             'password' => '|string|min:8'
@@ -96,14 +96,8 @@ class userController extends Controller
             ]);
             return response()->json($data,422);
         }
-        $user = User::find($id);
-        if(!$user){
-            $data = ([
-                'message' => 'usuario no encontrado',
-                'status'=>404
-            ]);
-            return response()->json($data,404);
-        }
+        $user = auth()->user();//obtiene el usuario autenticado a traves del token
+
         if(!$request->hasAny(['name','password'])){//verifica que se envie al menos un dato para actualizar
             $data = ([
                 'message' => 'no se enviaron datos para actualizar',
@@ -129,11 +123,11 @@ class userController extends Controller
         return response()->json($data, 200);
     }
 
-    public function destroy($id){
-        $user = User::find($id);
+    public function destroyOwnUser(){
+        $user = auth()->user();//obtiene el usuario autenticado a traves del token
         if(!$user){
             $data = ([
-                'message' => 'usuario no encontrado',
+                'message' => 'se necesita iniciar sesión',
                 'status'=>404
             ]);
             return response()->json($data,404);
