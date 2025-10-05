@@ -5,13 +5,14 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class userController extends Controller
 {
     public function index()
     {
         //
-        $users = User::all();//aqui se recupera todos los datos de usuarios y se almacena en data
+        $users = User::with('roles')->get();//aqui se recupera todos los datos de usuarios y se almacena en data
         if ($users->isEmpty()){//aqui se verifica y muestra mensaje error si esta vacia los datos de usuarios
             $data = [
                 'message' =>'No se encontraron usuarios' ,
@@ -19,11 +20,15 @@ class userController extends Controller
             ];
             return response()->json($data, 404);
         }
-        $data = [
-            'Users' =>$users,
-            'status' =>200
-        ];
-        return response()->json($data, 200);
+        $data = $users->map(function($user){//aqui se mapea los datos de cada usuario para mostrar solo los campos necesarios
+            return [
+                'Users' =>$user->name,
+                'Emails' =>$user->email,
+                'Roles' =>$user->roles->pluck('name'),//con pluck('name') obtengo todos los roles que tiene el usuario
+            ];
+        });
+
+        return response()->json(['users'=>$data,'status' => 200]);
     }
     //
     public function store(Request $request){
@@ -67,7 +72,7 @@ class userController extends Controller
         }
     }
     public function show($id){
-        $user = User::find($id);
+        $user = User::with('roles')->find($id); //con with('roles') trae los roles asociados al usuario
         if(!$user){
             $data = [
                 'message' => 'Usuario no encontrado',
@@ -76,7 +81,9 @@ class userController extends Controller
             return response()->json($data, 404);
         }
         $data = [
-            'user' => $user,
+            'user' => $user->name,
+            'email' => $user->email,
+            'roles' => $user->roles->pluck('name'), // con name obtengo todos los roles que tiene el usuario
             'status' => 200
         ];
         return response()->json($data, 200);
@@ -235,6 +242,37 @@ class userController extends Controller
         $request->user()->currentAccessToken()->delete();//elimina el token de autenticacion actual
         $data = ([
             'message' => 'Cierre de sesión exitoso',
+            'status' => 200
+        ]);
+        return response()->json($data, 200);
+    }
+
+    public function AssignRole(Request $request, $id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            $data = ([
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ]);
+            return response()->json($data, 404);
+        }
+
+        $roleName = $request->input('role');
+        $role = Role::where('name', $roleName)->first();
+        if (!$role) {
+            $data = ([
+                'message' => 'Rol no encontrado',
+                'status' => 404
+            ]);
+            return response()->json($data, 404);
+        }
+
+        $user->assignRole($roleName);
+        $data = ([
+            'message' => 'Rol asignado con éxito',
+            'user' => $user->name,
+            'role' => $roleName,
             'status' => 200
         ]);
         return response()->json($data, 200);

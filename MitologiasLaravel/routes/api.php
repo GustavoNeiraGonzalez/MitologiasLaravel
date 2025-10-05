@@ -51,6 +51,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/users/{id}', [userController::class, 'destroyOtherUser']);
 });
 
+Route::middleware(['auth:sanctum'])->group(function () {
+    // Rutas que solo puede acceder un usuario con rol de admin
+    Route::post('/users/{idUser}/promote', [userController::class, 'AssignRole']);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     //ruta para asociar un usuario a una mitologia (guardar mitologia)
     Route::post('/mitologias/{IdMitologia}/users', [MitologiasController::class, 'attachUser']);
