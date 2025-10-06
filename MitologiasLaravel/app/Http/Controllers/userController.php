@@ -24,6 +24,7 @@ class userController extends Controller
             return [
                 'Users' =>$user->name,
                 'Emails' =>$user->email,
+                'Id' =>$user->id,
                 'Roles' =>$user->roles->pluck('name'),//con pluck('name') obtengo todos los roles que tiene el usuario
             ];
         });
@@ -277,4 +278,53 @@ class userController extends Controller
         ]);
         return response()->json($data, 200);
     }
+    public function RemoveRol(Request $request, $id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            $data = ([
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ]);
+            return response()->json($data, 404);
+        }
+        // Obtener el nombre del rol desde la solicitud
+        $roleName = $request->input('role');
+        // Buscar el rol por nombre
+        $role = Role::where('name', $roleName)->first();
+        // Verificar si el rol existe
+        if (!$role) {
+            $data = ([
+                'message' => 'Rol no encontrado',
+                'status' => 404
+            ]);
+            return response()->json($data, 404);
+        }
+        // Verificar si el usuario tiene el rol antes de intentar eliminarlo
+        if (!$user->hasRole($roleName)) {
+            return response()->json([
+                'message' => 'El usuario no tiene este rol',
+                'status' => 400
+            ], 400);
+        }
+
+        $user->removeRole($roleName);
+        $data = ([
+            'message' => 'Rol eliminado con éxito',
+            'user' => $user->name,
+            'role' => $roleName,
+            'status' => 200
+        ]);
+        return response()->json($data, 200);
+    }
+
+    public function showRoles()
+    {
+        $roles = Role::all()->pluck('name');
+        return response()->json([
+            'roles' => $roles,
+            'status' => 200
+        ]);
+    }
+
 }
