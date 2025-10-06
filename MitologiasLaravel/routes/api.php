@@ -51,7 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/users/{id}', [userController::class, 'destroyOtherUser']);
 });
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     // Rutas que solo puede acceder un usuario con rol de admin
     Route::post('/users/{idUser}/promote', [userController::class, 'AssignRole']);
 });
