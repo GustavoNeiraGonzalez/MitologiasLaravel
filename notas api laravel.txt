@@ -1007,8 +1007,22 @@ Y EN BUSQUEDA POR ID HAREMOS ALGO SIMILAR:
     }
 )
 - sencillo nuevamente incluimos los roles en la busqueda y en return usamos pluck para todos los roles del usuario
+----------------------------------------
+Limitar el uso de rol en una peticion, es decir que un admin solo pueda realizar la peticion:
 
+(
+Route::middleware('auth:sanctum', 'role:admin')->group(function () {
+    //protege las rutas para que solo usuarios autenticados puedan realizar estas acciones
+    //ruta para crear mitologia
+    Route::post('/mitologias', [MitologiasController::class, 'store']);
+	...
+	...
+	...
+});
+)
 
+- simplemente en esta agrupacion de rutas que necesitaba estar logeado para realizarlas agregamos 'role:admin'
+  de esta manera el usuario tiene que estar logeado y ser un admin para crear una mitologia y el resto de peticiones agrupadas
 
 -----------------------------------------
 MEJORAR PETICIONES QUE REQUIERAN DATOS O MODIFIQUEN DATOS DEL USUARIO QUE HA INICIADO SESION
