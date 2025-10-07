@@ -855,6 +855,162 @@ php artisan db:seed --class=UserRolSeeder
 ahora solo nos queda asignar los roles a un usuario por controlador y luego proteger estas rutas por los roles
 
 -------------------------------------
+CONFIGURANDO PERMISOS ROLES Y SU USO EN API
+
+primero nos vamos a /bootstrap/app.php
+y dentro de withMiddleware(function ...){}
+agregamos  el uso de roles y permisos de spatie:
+(
+->withMiddleware(function (Middleware $middleware): void {
+        //
+        $middleware->alias([
+
+        'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
+
+
+    })
+)
+
+al tener esto agregado podremos usar los permisos y roles en las peticiones ej:
+
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    // Rutas que solo puede acceder un usuario con rol de admin
+    Route::post('/users/{idUser}/promote', [userController::class, 'AssignRole']);
+});
+
+en esta peticion tiene que estar logeado y tiene que tener el rol admin() para realizarla
+(puedes desactivar role admin para darle un rol a alguien primero o crear de otra forma los roles para no hacer 
+esto en tu primer usuario admin)
+
+---------------------------
+CREAR FUNCIONES PARA AGREGAR ROLES y remover roles
+(
+public function AssignRole(Request $request, $id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            $data = ([
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ]);
+            return response()->json($data, 404);
+        }
+
+        $roleName = $request->input('role');
+        $role = Role::where('name', $roleName)->first();
+        if (!$role) {
+            $data = ([
+                'message' => 'Rol no encontrado',
+                'status' => 404
+            ]);
+            return response()->json($data, 404);
+        }
+
+        $user->assignRole($roleName);
+        $data = ([
+            'message' => 'Rol asignado con éxito',
+            'user' => $user->name,
+            'role' => $roleName,
+            'status' => 200
+        ]);
+        return response()->json($data, 200);
+    }
+)
+
+-bastante facil, se busca el usuario se busca que el rol del input exista dentro de Role y si es asi
+ se asigna el rol al usuario con assignRole()
+
+REMOVER ROLES es casi igual al primero modificando los mensajes en return y quitando assignrol por removerole :
+
+(
+        // Verificar si el usuario tiene el rol antes de intentar eliminarlo
+        if (!$user->hasRole($roleName)) {
+            return response()->json([
+                'message' => 'El usuario no tiene este rol',
+                'status' => 400
+            ], 400);
+        }
+
+        $user->removeRole($roleName);
+)
+- agregamos un if extra para ver si el usuario tiene ese rol y si si, removerlo
+- tomamos de base la funcion asignar rol y le cambiamos el nombre
+- hay que modificar losm nesajes dentro de los return correspondientes
+--------------------------------------------
+FUNCION MOSTRAR ROLES Y MOSTRAR ROLES AL BUSCAR USUARIO
+
+mostrar que roles hay:
+(
+ public function showRoles()
+    {
+        $roles = Role::all()->pluck('name');
+        return response()->json([
+            'roles' => $roles,
+            'status' => 200
+        ]);
+    }
+)
+-sencillo buscar y mostrar los roles
+
+MOSTRAR roles en busqueda usuario modificamos la peticion de buscar usuarios:
+en la busqueda de usuario usamos with('roles')->get() para incluir los roles del usuario en la busqueda y luego en 
+return los roles que tiene el usuario:
+
+(
+public function index()
+    {
+        //
+        $users = User::with('roles')->get();//aqui se recupera todos los datos de usuarios y se almacena en data
+        if ($users->isEmpty()){//aqui se verifica y muestra mensaje error si esta vacia los datos de usuarios
+            $data = [
+                'message' =>'No se encontraron usuarios' ,
+                'status' =>404
+            ];
+            return response()->json($data, 404);
+        }
+        $data = $users->map(function($user){//aqui se mapea los datos de cada usuario para mostrar solo los campos necesarios
+            return [
+                'Users' =>$user->name,
+                'Emails' =>$user->email,
+                'Id' =>$user->id,
+                'Roles' =>$user->roles->pluck('name'),//con pluck('name') obtengo todos los roles que tiene el usuario
+            ];
+        });
+
+        return response()->json(['users'=>$data,'status' => 200]);
+    } 
+)
+
+Y EN BUSQUEDA POR ID HAREMOS ALGO SIMILAR:
+
+(
+    public function show($id){
+        $user = User::with('roles')->find($id); //con with('roles') trae los roles asociados al usuario
+        if(!$user){
+            $data = [
+                'message' => 'Usuario no encontrado',
+                'status' => 404
+            ];
+            return response()->json($data, 404);
+        }
+        $data = [
+            'user' => $user->name,
+            'email' => $user->email,
+            'roles' => $user->roles->pluck('name'), // con pluck('name') obtengo todos los roles que tiene el usuario
+            'status' => 200
+        ];
+        return response()->json($data, 200);
+
+    }
+)
+- sencillo nuevamente incluimos los roles en la busqueda y en return usamos pluck para todos los roles del usuario
+
+
+
+-----------------------------------------
 MEJORAR PETICIONES QUE REQUIERAN DATOS O MODIFIQUEN DATOS DEL USUARIO QUE HA INICIADO SESION
 
 en lugar de buscar user por id, usamos el usuario logeado (gracias a los tokens en sanctum)
@@ -877,6 +1033,14 @@ en lugar de   $user = User::find($id); haremos lo siguiente
 aqui buscamos el usuario logeado a traves de auth()->user(); 
 y usamos un if para ver si nos devuelve el usuario logeado
 (de esta manera no haremos cosas raras usando el usuario logeado y solo haremos que funcione como lo hacia por id)
+-----------------------------------
+
+
+
+
+
+
+
 ----------------------
 EXPLICACIONES QUE FALTAN EN MITOLOGIAS:
 
