@@ -12,6 +12,7 @@ class Mitologias extends Model
     protected $fillable = [
         'Historia',
         'titulo',
+        'imagen',
         'civilizacion_id'
     ];
 

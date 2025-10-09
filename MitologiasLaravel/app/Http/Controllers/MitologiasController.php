@@ -59,6 +59,8 @@ class MitologiasController extends Controller
         $validator = Validator::make($request->all(), [// Se crean las reglas de validación
             'Historia' => 'required|string|max:4000',
             'titulo' => 'required|string|max:25',
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            // Imagen opcional, tipos permitidos y tamaño máximo 5MB
             'civilizacion_id' => 'required|integer|exists:civilizaciones,id'
             // Asegura que la civilización exista en la tabla civilizaciones
             //usando exists:civilizaciones,id (nombre de la tabla y columna)
@@ -71,16 +73,29 @@ class MitologiasController extends Controller
             ];
             return response()->json($data, 422);
         }
+
         try {
             $mitologias = Mitologias::create([//crea nuevo registro
                 'Historia' => $request->Historia,
                 'titulo' => $request->titulo,
                 'civilizacion_id' => $request->civilizacion_id
             ]);
+              // Si se envió una imagen, la procesamos en este if
+            if ($request->hasFile('imagen')) {
+                // Si ya tenía una imagen anterior, se elimina
+                if ($mitologias->imagen) {
+                    Storage::disk('public')->delete($mitologias->imagen);
+                }
 
+                // Se guarda la nueva imagen
+                $path = $request->file('imagen')->store('mitologias', 'public');
+                $mitologias->imagen = $path;
+                $mitologias->save();
+            }
             $data = [//mensaje de exito
                 'message' => 'Mitología creada exitosamente',
                 'Mitologia' => $mitologias,
+                'imagen_url' => $mitologias->imagen ? asset('storage/' . $mitologias->imagen) : null,
                 'status' => 201
             ];
             return response()->json($data, 201);//retorna mensaje de exito
