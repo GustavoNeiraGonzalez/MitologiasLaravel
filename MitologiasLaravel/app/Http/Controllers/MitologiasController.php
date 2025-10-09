@@ -33,6 +33,7 @@ class MitologiasController extends Controller
                 'id' => $mitologia->id,
                 'titulo' => $mitologia->titulo,
                 'Historia' => $mitologia->Historia,
+                'imagen_url' => $mitologia->imagen ? asset('storage/' . $mitologia->imagen) : null,
                 'civilizacion' => $mitologia->civilizacion->civilizacion// operador ternario (? si valor true : no valor false)para
                 //  evitar error si no hay civilizacion
             ];
@@ -95,7 +96,7 @@ class MitologiasController extends Controller
             $data = [//mensaje de exito
                 'message' => 'Mitología creada exitosamente',
                 'Mitologia' => $mitologias,
-                'imagen_url' => $mitologias->imagen ? asset('storage/' . $mitologias->imagen) : null,
+                'imagen_url' =>  $mitologias->imagen ? asset('storage/' . $mitologias->imagen) : null,
                 'status' => 201
             ];
             return response()->json($data, 201);//retorna mensaje de exito
@@ -128,6 +129,7 @@ class MitologiasController extends Controller
             'Mitologia' => $mitologia->titulo,
             'civilizacion' => $mitologia->civilizacion->civilizacion,
             'Historia' => $mitologia->Historia,
+            'imagen_url' => $mitologia->imagen ? asset('storage/' . $mitologia->imagen) : null,
             'status' => 200
         ];
         return response()->json($data, 200);//retorna mensaje de exito
