@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreMitologiasRequest;
 use App\Http\Requests\UpdateMitologiasRequest;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class MitologiasController extends Controller
 {
@@ -81,7 +82,7 @@ class MitologiasController extends Controller
                 'titulo' => $request->titulo,
                 'civilizacion_id' => $request->civilizacion_id
             ]);
-              // Si se envió una imagen, la procesamos en este if
+            // Si se envió una imagen, la procesamos en este if
             if ($request->hasFile('imagen')) {
                 // Si ya tenía una imagen anterior, se elimina
                 if ($mitologias->imagen) {
@@ -146,6 +147,7 @@ class MitologiasController extends Controller
         $validator = Validator::make($request->all(), [// Se crean las reglas de validación
             'Historia' => 'required|string|max:4000',
             'titulo' => 'required|string|max:25',
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',// Imagen opcional, tipos permitidos y tamaño máximo 5MB
             'civilizacion_id' => 'required|integer|exists:civilizaciones,id' // Asegura que la civilización exista en la tabla civilizaciones
         ]);
         if ($validator->fails()) {// Verifica si la validación falla
@@ -163,7 +165,18 @@ class MitologiasController extends Controller
             ];
             return response()->json($data, 404);//retorna mensaje de error
         }
+
         try {
+             // Si se envió una imagen, la procesamos en este if antes de actualizar los datos
+            if ($request->hasFile('imagen')) {
+                // Si ya tenía una imagen anterior, se elimina
+                if ($mitologia->imagen) {
+                    Storage::disk('public')->delete($mitologia->imagen);
+                }
+                // Se guarda la nueva imagen
+                $path = $request->file('imagen')->store('mitologias', 'public');
+                $mitologia->imagen = $path;//actualiza imagen
+            }
             $mitologia->Historia = $request->Historia;//actualiza historia
             $mitologia->titulo = $request->titulo;//actualiza titulo
             $mitologia->civilizacion_id = $request->civilizacion_id;//actualiza civilizacion
@@ -194,6 +207,7 @@ class MitologiasController extends Controller
         $validator = Validator::make($request->all(), [// Se crean las reglas de validación
             'Historia' => '|string|max:4000',
             'titulo' => '|string|max:25',
+            'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',// Imagen opcional, tipos permitidos y tamaño máximo 5MB
             'civilizacion_id' => '|integer|exists:civilizaciones,id' // Asegura que la civilización exista en la tabla civilizaciones
         ]);
         if ($validator->fails()) {// Verifica si la validación falla
@@ -212,28 +226,43 @@ class MitologiasController extends Controller
             return response()->json($data, 404);//retorna mensaje de error
         }
         try {
-            if (!$request->hasAny(['Historia', 'titulo', 'civilizacion_id'])) {// Verifica si al menos uno de los campos está presente en la solicitud
+            if (!$request->hasAny(['imagen', 'Historia', 'titulo', 'civilizacion_id'])) {// Verifica si al menos uno de los campos está presente en la solicitud
                 $data = [
                     'message' => 'No se proporcionaron datos para actualizar',
                     'status' => 400
                 ];
                 return response()->json($data, 400);//retorna mensaje de error
             }
+             $data = [//mensaje de exito
+                'message' => 'Mitología actualizada exitosamente'
+            ];
             if ($request->has('Historia')) {
                 $mitologia->Historia = $request->Historia;//actualiza historia
+                $data['Historia'] = $request->Historia; // ✅ guarda como clave, no como array numérico
             }
             if ($request->has('titulo')) {
                 $mitologia->titulo = $request->titulo;//actualiza titulo
+                $data['titulo'] = $request->titulo; // ✅ guarda como clave, no como array numérico
             }
             if ($request->has('civilizacion_id')) {
                 $mitologia->civilizacion_id = $request->civilizacion_id;//actualiza civilizacion
+                $data['civilizacion_id'] = $mitologia->civilizacion_id;
+            }
+             // Si se envió una imagen, la procesamos en este if
+            if ($request->hasFile('imagen')) {
+                // Si ya tenía una imagen anterior, se elimina
+                if ($mitologia->imagen) {
+                    Storage::disk('public')->delete($mitologia->imagen);
+                }
+
+                // Se guarda la nueva imagen
+                $path = $request->file('imagen')->store('mitologias', 'public');
+                $mitologia->imagen = $path;//actualiza imagen
+                $data['imagen'] = $mitologia->imagen ? asset('storage/' . $mitologia->imagen) : null;
             }
             $mitologia->save();//actualiza mitologia
-            $data = [//mensaje de exito
-                'message' => 'Mitología actualizada exitosamente',
-                'Mitologia' => $mitologia->titulo,
-                'status' => 200
-            ];
+
+            $data['status'] = 200;
             return response()->json($data, 200);
 
         } catch (\Exception $e) {//captura errores
