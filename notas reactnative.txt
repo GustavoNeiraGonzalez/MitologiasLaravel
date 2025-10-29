@@ -71,3 +71,41 @@ export default function Index() {
 
 )
 
+bien ahora crearemos dentro de la carpeta app, una carpeta (tabs) donde aqui se crean los componentes pestañas/rutas que hacemos, por lo que moveremos
+index y login alli.
+Y LAYOUT no se mueve allí, se copia y pega es decir 2 layout en app y otro en tabs
+que haremos con esto? crearemos un tabs que es el menu de pestaña que esta abajo en muchas apps, este sera en el layout dentro de (tabs) y el de apps lo modificaremos
+un poco
+(tabs) layout
+
+(
+import { Tabs } from "expo-router";
+
+export default function TabsLayout() {
+  return (
+    <>
+      <Tabs>
+        <Tabs.Screen name="Login" options={{ title: "Login Page" }} />
+        <Tabs.Screen name="index" options={{ title: "Home Page" }} />
+      </Tabs>
+    </>
+  );
+}
+)
+con esto creamos el menu de pestaña de abajo del telefono y lo siguiente haremos en app layout
+(
+import { Stack } from "expo-router";
+
+export default function RootLayout() {
+  return (
+    <>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack>
+    </>
+  );
+}
+
+)
+
+que hicimos con esto? que layout en app es la navegacion principal de pestañas y (tabs) la navegacion secundaria y asi agruparlas tambien para el layout principal en app
