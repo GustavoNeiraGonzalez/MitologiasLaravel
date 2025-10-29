@@ -24,3 +24,50 @@ export default function RootLayout() {
 aqui <Stack/> representa la pestaña/ruta que estes actualmente es decir el componente fuera de layout
 con <Text> vemos que hay uno arriba y abajo de stack, por lo que el de arriba seria un intento de header y
  el de abajo un intento de footer
+
+ahora para definir las rutas de nuestros componentes crearemos un componente login con un texto unicamente 
+
+(
+import { View, Text } from "react-native";
+
+export default function LoginScreen() {
+    return<View>
+        {" "}
+        <Text>hello this is the login page</Text>
+    </View>
+}
+)
+
+y ahora haremos lo siguiente en layout usando el index por defecto y el login que creamos:
+
+(
+<Stack>
+        <Stack.Screen name="Login" options={{ title: "Login Page" }} />
+        <Stack.Screen name="index" options={{ title: "Home Page" }} />
+</Stack>
+)
+
+ahora nos falta navegar a esa pestaña a traves del index, sin modificar nada del index que vino desde el principio de las instrucciones
+usaremos Link, lo importamos y lo usaremos, con el href haciendo referencia a la ruta del componente que creamos:
+
+(
+import { Text, View } from "react-native";
+import {Link} from "expo-router";
+
+export default function Index() {
+  return (
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Text>Edit app/index.tsx to edit this screen.</Text>
+      <Link href="/login">Go to Login page</Link>
+    </View>
+  );
+}
+
+)
+
