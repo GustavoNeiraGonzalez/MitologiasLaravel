@@ -1,0 +1,26 @@
+luego de creado el proyecto:
+
+para borrar la plantilla de ejemplo que trae Expo Router y comenzar desde cero. (que lo veo mas entendible)
+ npm run reset-project
+
+luego aqui tendremos un index de ejemplo que es la ruta de pantalla principal es decir el home pero el header pertenece a:
+ layout que es por ejemplo unos componentes compartidos en cada ruta, por ejemplo el header que tendra cada pantalla o barra de navegacion
+
+EJEMPLO DE LAYOUT
+
+import { Stack } from "expo-router";
+import { Text } from "react-native";
+
+export default function RootLayout() {
+  return (
+    <>
+      <Text>este texto aparece en header</Text>
+      <Stack />
+      <Text>este texto aparece en footer</Text>
+    </>
+  );
+}
+
+aqui <Stack/> representa la pestaña/ruta que estes actualmente es decir el componente fuera de layout
+con <Text> vemos que hay uno arriba y abajo de stack, por lo que el de arriba seria un intento de header y
+ el de abajo un intento de footer
