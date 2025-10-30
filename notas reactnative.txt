@@ -109,3 +109,57 @@ export default function RootLayout() {
 )
 
 que hicimos con esto? que layout en app es la navegacion principal de pestañas y (tabs) la navegacion secundaria y asi agruparlas tambien para el layout principal en app
+----------------------
+tab bar estilizando:
+en tabs podemos cambiarle los colores y, cambiando de color el icono cuando esta activo o inactivo, y mas usando screenoptions:
+(
+  return (
+    <>
+      <Tabs screenOptions={{tabBarActiveTintColor:"coral", tabBarActiveBackgroundColor:"#225a8fff",tabBarInactiveTintColor:"white", tabBarInactiveBackgroundColor:"#120b1fff"}}>
+        ...
+	...
+      </Tabs>
+    </>
+  );
+
+)
+tambien podemos agregarles iconos usando la lista de iconos que esta en esta pagina
+https://icons.expo.fyi/Index
+
+aqui buscas el icono le das click y te sale la intruccion para importar y usar. importaras el icono. usaremos 2 iconos y agregaremos la opcion de que cambie de 
+icono si se ha presionado esa pestaña:
+
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+
+<MaterialCommunityIcons name="home-heart" size={24} color={color} /> 
+<FontAwesome name="home" size={24} color={color} />
+
+para usarlos serias así dentro de tabs:
+
+(
+import { Tabs } from "expo-router";
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+export default function TabsLayout() {
+  return (
+    <>
+      <Tabs screenOptions={{tabBarActiveTintColor:"coral", tabBarActiveBackgroundColor:"#225a8fff",tabBarInactiveTintColor:"white", tabBarInactiveBackgroundColor:"#120b1fff"}}>
+        <Tabs.Screen name="login" options={{ title: "Login Page" }} />
+        <Tabs.Screen name="index" options={{ title: "Home Page",
+         tabBarIcon:({color,focused})=>{
+            return focused ? 
+            (<MaterialCommunityIcons name="home-heart" size={24} color={color} />) : 
+            (<FontAwesome name="home" size={24} color={color} />)
+        },
+         }} />
+      </Tabs>
+    </>
+  );
+}
+)
+
+que hicimos?
+-usamos la propiedad tabBarIcon para agregar el icono que importamos, tambien usamos color, para que se use el color que usamos anteriormente en screenoptions
+  y ademas focused para que podamos cambiar de icono si esta presionado o no. 
+- usamos un operador ternario ( ? :) para hacer el uso de un icono u otro. y en color le cambiamos el que venia por defecto por color={color}
