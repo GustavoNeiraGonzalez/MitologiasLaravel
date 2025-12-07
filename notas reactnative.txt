@@ -163,3 +163,18 @@ que hicimos?
 -usamos la propiedad tabBarIcon para agregar el icono que importamos, tambien usamos color, para que se use el color que usamos anteriormente en screenoptions
   y ademas focused para que podamos cambiar de icono si esta presionado o no. 
 - usamos un operador ternario ( ? :) para hacer el uso de un icono u otro. y en color le cambiamos el que venia por defecto por color={color}
+
+-----------------------------------------------------
+llamar datos del backend laravel usando axios
+
+-primero instalar axios:
+  npm install axios
+
+-luego el sv laravel se debe ejecutar asi: 
+ php artisan serve --host=0.0.0.0 --port=8000 
+(esto para que laravel pueda dar una url que pueda usar el emulador expo)
+
+-luego usamos la url de la api que es diferente, en este caso como usamos una que sea compatible con react 
+ vamos a cmd y escribimos ipconfig, ahi buscamos la primera ipv4 y copiamos esa direccion, luego agregamos 
+ :8000/api/mitologias donde modificas mitologias segun la peticion que quieras por ejemplo seria:
+ http://192.168.18.220:8000/api/mitologias

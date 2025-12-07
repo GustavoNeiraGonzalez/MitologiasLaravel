@@ -8,10 +8,11 @@ interface Mitologia {
 }
 export default function Index() {
   const [mitologias, setMitologias] = useState<Mitologia[]>([]);
+  const mitologiasurl = "http://192.168.18.220:8000/api/mitologias"; 
 
     useEffect(() => {
     axios
-      .get("http://127.0.0.1:8000/api/mitologias")
+      .get(mitologiasurl)
       .then((response) => {
         // Asumiendo que la API devuelve { Mitologias: [...] }
         setMitologias(response.data.Mitologias);
