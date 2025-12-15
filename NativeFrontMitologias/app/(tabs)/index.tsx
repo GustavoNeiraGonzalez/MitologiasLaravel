@@ -21,26 +21,56 @@ export default function Index() {
         console.log("Error al obtener mitologías:", err);
       });
   }, []);
-
-
-  return (
-   <View style={styles.container}>
-      <Text>Mitologías disponibles:</Text>
-
-      {mitologias.map((item) => (
-        <Text key={item.id}>📘 {item.titulo}</Text>
-      ))}
-
-      <Link href="/login">Ir a Login</Link>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
+
   container: {
     flex: 1,
+    padding: 16,
     backgroundColor: "#3e08a1ff",
-    alignItems: "center",
-    justifyContent: "center",
+
+  },
+
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+
+  card: {
+    width: "50%",          // 👈 mitad del ancho
+    padding: 8,
+  },
+
+  cardText: {
+    backgroundColor: "#f2f2f2",
+    padding: 16,
+    borderRadius: 10,
+    textAlign: "center",
+    fontWeight: "600",
   },
 });
+
+
+
+return (
+  <View style={styles.container}>
+    <Text style={styles.title}>Mitologías disponibles</Text>
+
+    <View style={styles.grid}>
+      {mitologias.map((item) => (
+        <View key={item.id} style={styles.card}>
+          <Text style={styles.cardText}>{item.titulo}</Text>
+        </View>
+      ))}
+    </View>
+
+    <Link href="/login">Ir a Login</Link>
+  </View>
+  );
+}
