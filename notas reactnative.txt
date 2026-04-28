@@ -178,3 +178,62 @@ llamar datos del backend laravel usando axios
  vamos a cmd y escribimos ipconfig, ahi buscamos la primera ipv4 y copiamos esa direccion, luego agregamos 
  :8000/api/mitologias donde modificas mitologias segun la peticion que quieras por ejemplo seria:
  http://192.168.18.220:8000/api/mitologias
+
+
+Ahora vamos a obtener datos desde el backend.
+Para eso usamos useEffect, que ejecuta código cuando el componente se carga, y useState, que nos permite guardar los datos recibidos.
+Hacemos una petición con axios a la API y, cuando obtenemos la respuesta, guardamos las mitologías en el estado.
+Este componente (Index) actúa como la página principal, donde se mostrarán los títulos obtenidos desde el backend y desde ahí el usuario podrá navegar a cada mitología correspondiente.
+tambien interface nos indica que tipo de datos esperamos en mitologia, no es obligatorio pero ayuda el tenerlo
+
+import {Link} from "expo-router";
+import { useEffect, useState } from "react";
+import axios from "axios";
+interface Mitologia {
+  id: number;
+  titulo: string;
+}
+export default function Index() {
+  const [mitologias, setMitologias] = useState<Mitologia[]>([]);
+  const mitologiasurl = "http://192.168.18.220:8000/api/mitologias"; 
+
+    useEffect(() => {
+    axios
+      .get(mitologiasurl)
+      .then((response) => {
+        // Asumiendo que la API devuelve { Mitologias: [...] }
+        setMitologias(response.data.Mitologias);
+      })
+      .catch((err) => {
+        console.log("Error al obtener mitologías:", err);
+      });
+  }, []);
+..
+..
+..
+..
+          <View style={styles.grid}>
+      {mitologias.map((item) => (
+        <Link key={item.id} href={`./mitologia/${item.id}`}>
+          <View style={styles.card}>
+            <Text style={styles.cardText}>{item.titulo}</Text>
+        </View>
+    </Link>
+      ))}
+    </View>
+
+con map estamos repasando cada valor en item, donde item tiene el id y titulo de la mitologia.
+gracias a esto podemos mostrar todas las mitologias una por una con las mismas estructura de html 
+y css que hemos decidido. si no hemos creado una carpeta mitologia, debemos crearla, la cree dentro 
+app, es decir app/mitologias/[id].tsx tambien crear el archivo llamado [id].tsx ¿porque [id]?
+ porque es una ruta dinamica, es decir cambia segun el id de mitologia
+
+de momento no crearemos nada dentro de [id].tsx asi que que esté asi
+export default function Page() {
+  return null;
+}
+
+----
+ideas:
+-buscar una imagen mitologica como un dios, que este este pegado en una posición de la pantalla y
+  que al hacer click en el se esconda dejando un icono o barra para presionar para que vuelva a aparecer

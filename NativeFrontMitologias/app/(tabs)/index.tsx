@@ -64,9 +64,11 @@ return (
 
     <View style={styles.grid}>
       {mitologias.map((item) => (
-        <View key={item.id} style={styles.card}>
-          <Text style={styles.cardText}>{item.titulo}</Text>
+        <Link key={item.id} href={`./mitologia/${item.id}`}>
+          <View style={styles.card}>
+            <Text style={styles.cardText}>{item.titulo}</Text>
         </View>
+    </Link>
       ))}
     </View>
 
