@@ -1,3 +1,10 @@
+(esto es recordatorio de como iniciar el proyecto, no es parte de las instrucciones iniciales)
+ para ejecutar el proyecto:
+
+npx expo start 
+
+-----------------
+
 luego de creado el proyecto:
 
 para borrar la plantilla de ejemplo que trae Expo Router y comenzar desde cero. (que lo veo mas entendible)
@@ -172,7 +179,8 @@ llamar datos del backend laravel usando axios
 
 -luego el sv laravel se debe ejecutar asi: 
  php artisan serve --host=0.0.0.0 --port=8000 
-(esto para que laravel pueda dar una url que pueda usar el emulador expo)
+(esto es importante para que laravel pueda dar una url que pueda usar el emulador expo y de esta forma obtener los datos del backend
+exitosamente)
 
 -luego usamos la url de la api que es diferente, en este caso como usamos una que sea compatible con react 
  vamos a cmd y escribimos ipconfig, ahi buscamos la primera ipv4 y copiamos esa direccion, luego agregamos 

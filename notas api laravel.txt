@@ -1,3 +1,6 @@
+(ejecutar el sv con este comando de esta forma para lograr darle los datos a reactnative o de otra forma no se podría)
+
+php artisan serve --host=0.0.0.0 --port=8000 
 --
 INSTALACION
 

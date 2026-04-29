@@ -13,6 +13,7 @@ export default function TabsLayout() {
           (<FontAwesome name="home" size={24} color={color} />)
         },
          }} />
+        <Tabs.Screen name="mitologia/[id]" options={{ href:null, }} />
       </Tabs>
     </>
   );
