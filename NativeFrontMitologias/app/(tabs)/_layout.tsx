@@ -13,7 +13,8 @@ export default function TabsLayout() {
           (<FontAwesome name="home" size={24} color={color} />)
         },
          }} />
-        <Tabs.Screen name="mitologia/[id]" options={{ href:null, }} />
+        <Tabs.Screen name="mitologia/[id]" options={{ href:null, /*esto evita que se cree un cuadro para 
+          este componente, ya que al ser dinamico (1 por cada mitologia) no tiene sentido que se cree al iniciar la app*/}} />
       </Tabs>
     </>
   );

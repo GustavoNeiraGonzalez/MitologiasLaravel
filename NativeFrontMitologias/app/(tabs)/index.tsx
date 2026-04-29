@@ -2,23 +2,25 @@ import { StyleSheet,Text, View } from "react-native";
 import {Link} from "expo-router";
 import { useEffect, useState } from "react";
 import axios from "axios";
-interface Mitologia {
+interface Civilizacion {
   id: number;
-  titulo: string;
+  civilizacion: string;
 }
 export default function Index() {
-  const [mitologias, setMitologias] = useState<Mitologia[]>([]);
-  const mitologiasurl = "http://192.168.18.220:8000/api/mitologias"; 
+  const [civilizaciones, setCivilizacion] = useState<Civilizacion[]>([]);
+  const civilizacionsurl = "http://192.168.18.220:8000/api/civilizaciones"; 
 
     useEffect(() => {
     axios
-      .get(mitologiasurl)
+      .get(civilizacionsurl)
       .then((response) => {
+          console.log(response.data);
+
         // Asumiendo que la API devuelve { Mitologias: [...] }
-        setMitologias(response.data.Mitologias);
+        setCivilizacion(response.data);
       })
       .catch((err) => {
-        console.log("Error al obtener mitologías:", err);
+        console.log("Error al obtener civilizacion:", err);
       });
   }, []);
 const styles = StyleSheet.create({
@@ -63,10 +65,10 @@ return (
     <Text style={styles.title}>Mitologías disponibles</Text>
 
     <View style={styles.grid}>
-      {mitologias.map((item) => (
+      {civilizaciones.map((item) => (
         <Link key={item.id} href={`./mitologia/${item.id}`}>
           <View style={styles.card}>
-            <Text style={styles.cardText}>{item.titulo}</Text>
+            <Text style={styles.cardText}>{item.civilizacion}</Text>
         </View>
     </Link>
       ))}
