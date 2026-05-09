@@ -16,7 +16,6 @@ export default function Index() {
       .then((response) => {
           console.log(response.data);
 
-        // Asumiendo que la API devuelve { Mitologias: [...] }
         setCivilizacion(response.data);
       })
       .catch((err) => {

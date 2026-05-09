@@ -1,8 +1,76 @@
-import { View, Text } from "react-native";
+import { StyleSheet,View, Text } from "react-native";
+import {useLocalSearchParams , Link} from "expo-router";
+import { useEffect, useState } from "react";
+import axios from "axios";
+interface Mitologia {
+  id: number;
+  titulo: string;
+}
 
-export default function MitologiaDetalle() {
+export default function MitologiaTitulo() {
+  //aqui obtendremos el titulo de la mitologia o historia, correspondiente a la civilizacion seleccionada previamente
+  const [mitologias, setMitologias] = useState<Mitologia[]>([]);
+  const { id } = useLocalSearchParams(); // Obtener el ID de la civilización desde los parámetros de búsqueda
+  const mitologiasUrl = `http://localhost:8000/api/mitologias/${id}`;
+
+  useEffect(() => {
+    axios
+      .get(mitologiasUrl)
+      .then((response) => {
+          console.log(response.data);
+        setMitologias(response.data);
+      })
+      .catch((err) => {
+        console.log("Error al obtener Titulo de la historia:", err);
+      });
+  }, [mitologiasUrl]); // Agregar mitologiasUrl como dependencia para que se ejecute cuando cambie el ID de civilización
+
+  const styles = StyleSheet.create({
+
+    container: {
+      flex: 1,
+      padding: 16,
+      backgroundColor: "#3e08a1ff",
+
+    },
+
+    title: {
+      fontSize: 20,
+      fontWeight: "bold",
+      marginBottom: 16,
+      textAlign: "center",
+    },
+
+    grid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+    },
+
+    card: {
+      width: "50%",          // 👈 mitad del ancho
+      padding: 8,
+    },
+
+    cardText: {
+      backgroundColor: "#f2f2f2",
+      padding: 16,
+      borderRadius: 10,
+      textAlign: "center",
+      fontWeight: "600",
+    },
+  });
+
+
+
   return (
     <View>
+       {mitologias.map((item) => (
+        <Link key={item.id} href={`./mitologia/${item.id}`}>
+          <View style={styles.card}>
+            <Text style={styles.cardText}>{item.titulo}</Text>
+          </View>
+        </Link>
+      ))}
       <Text>HOLA MUNDO</Text>
     </View>
   );
