@@ -25,6 +25,8 @@ Route::get('/mitologias', [MitologiasController::class, 'index']);
 //ruta para mostrar mitologia por id
 Route::get('/mitologias/{id}', [MitologiasController::class, 'show']);
 
+Route::get('/mitologias/civilizacion/{id}', [MitologiasController::class, 'showMitologiasCivilizacion']);
+
 Route::middleware('auth:sanctum', 'role:admin')->group(function () {
     //protege las rutas para que solo usuarios autenticados puedan realizar estas acciones
     //ruta para crear mitologia

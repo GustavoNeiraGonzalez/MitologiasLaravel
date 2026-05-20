@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Mitologias;
 use App\Models\User;
+use App\Models\Civilizacion;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreMitologiasRequest;
 use App\Http\Requests\UpdateMitologiasRequest;
@@ -365,5 +366,25 @@ class MitologiasController extends Controller
                 'usuarios' => $usuarios->pluck('name'), //pluck extrae solo los nombres de los usuarios y no toda la info
                 'status' => 200
             ]);
+    }
+    public function showMitologiasCivilizacion($idCivilizacion)
+    {
+        $civilizacion = Civilizacion::find($idCivilizacion);
+        if (!$civilizacion) {
+            return response()->json(['message' => 'Civilización no encontrada'], 404);
+        }
+        $mitologias = $civilizacion->mitologias()->get();
+        return response()->json([
+            'civilizacion' => $civilizacion->civilizacion,
+            'mitologias' => $mitologias->map(function ($mitologia) {
+                return [
+                    'id' => $mitologia->id,
+                    'titulo' => $mitologia->titulo,
+                    'Historia' => $mitologia->Historia,
+                    'imagen_url' => $mitologia->imagen ? asset('storage/' . $mitologia->imagen) : null
+                ];
+            }),
+            'status' => 200
+        ], 200);
     }
 }
