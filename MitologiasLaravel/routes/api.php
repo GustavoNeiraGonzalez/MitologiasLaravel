@@ -86,8 +86,8 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 
 //ruta para mostrar todas las civilizaciones con sus mitologias
 Route::get('/civilizaciones', [CivilizacionController::class, 'index']);
-//ruta para mostrar civilizacion por id
-Route::get('/civilizaciones/{id}', [CivilizacionController::class, 'show']);
+//ruta para mostrar civilizacion con sus mitologias por id
+Route::get('/civilizaciones/{id}', [CivilizacionController::class, 'showCivWithMitologia']);
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     //ruta para crear civilizacion

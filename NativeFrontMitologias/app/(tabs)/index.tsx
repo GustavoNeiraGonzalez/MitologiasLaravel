@@ -8,7 +8,7 @@ interface Civilizacion {
 }
 export default function Index() {
   const [civilizaciones, setCivilizacion] = useState<Civilizacion[]>([]);
-  const civilizacionsurl = "http://192.168.18.220:8000/api/civilizaciones"; 
+  const civilizacionsurl = "http://192.168.18.42:8000/api/civilizaciones"; 
 
     useEffect(() => {
     axios
@@ -61,15 +61,15 @@ const styles = StyleSheet.create({
 
 return (
   <View style={styles.container}>
-    <Text style={styles.title}>Mitologías disponibles</Text>
+    <Text style={styles.title}>Mitologías disponiblesssss</Text>
 
     <View style={styles.grid}>
       {civilizaciones.map((item) => (
         <Link key={item.id} href={`./mitologia/${item.id}`}>
           <View style={styles.card}>
             <Text style={styles.cardText}>{item.civilizacion}</Text>
-        </View>
-    </Link>
+          </View>
+        </Link>
       ))}
     </View>
 

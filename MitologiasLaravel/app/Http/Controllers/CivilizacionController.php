@@ -28,13 +28,7 @@ class CivilizacionController extends Controller
        $result = $civilizaciones->map(function ($civilizacion) {
             return [
                 'id' => $civilizacion->id,
-                'civilizacion' => $civilizacion->civilizacion,
-                'Mitologias' => $civilizacion->Mitologias->map(function ($mitologia) {//map recorre cada mitologia y
-                // devuelve un nuevo array con los titulos asociados a la civilizacion
-                    return [
-                        'titulo' => $mitologia->titulo,
-                    ];
-                })
+                'civilizacion' => $civilizacion->civilizacion
             ];
         });
         return response()->json($result, 200);
@@ -75,7 +69,7 @@ class CivilizacionController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function showCivWithMitologia($id)
     {
         //
         $civilizacion = Civilizacion::with('Mitologias')->find($id);//busca civilizacion por id y con sus mitologias
@@ -87,10 +81,11 @@ class CivilizacionController extends Controller
             return response()->json($data, 404);
         }
         $data = [
-            'Civilizacion' => $civilizacion->civilizacion,
-            'Mitologias' => $civilizacion->Mitologias->map(function($mitologia){//map recorre cada mitologia y
+            'civilizacion' => $civilizacion->civilizacion,
+            'mitologias' => $civilizacion->Mitologias->map(function($mitologia){//map recorre cada mitologia y
                 // devuelve un nuevo array con los titulos asociados a la civilizacion
                 return [
+                    'id' => $mitologia->id,
                     'titulo' => $mitologia->titulo
                 ];
             }),
