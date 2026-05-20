@@ -1,5 +1,5 @@
 import { StyleSheet,View, Text } from "react-native";
-import {useLocalSearchParams , Link} from "expo-router";
+import {useLocalSearchParams , Link, Stack} from "expo-router";
 import { useEffect, useState } from "react";
 import axios from "axios";
 interface Mitologia {
@@ -10,6 +10,7 @@ interface Mitologia {
 export default function MitologiaTitulo() {
   //aqui obtendremos el titulo de la mitologia o historia, correspondiente a la civilizacion seleccionada previamente
   const [mitologias, setMitologias] = useState<Mitologia[]>([]);
+  const [civilizacion, setCivilizacion] = useState<string>("");
   const { id } = useLocalSearchParams(); // Obtener el ID de la civilización desde los parámetros de búsqueda
   const mitologiasUrl = `http://192.168.18.42:8000/api/civilizaciones/${id}`;
 
@@ -19,6 +20,7 @@ export default function MitologiaTitulo() {
       .then((response) => {
           console.log(response.data);
         setMitologias(response.data.mitologias); // Asegúrate de que la respuesta tenga la estructura correcta para acceder a las mitologías
+        setCivilizacion(response.data.civilizacion); // Establecer el nombre de la civilización
       })
       .catch((err) => {
         console.log("Error al obtener Titulo de la historia:", err);
@@ -63,15 +65,18 @@ export default function MitologiaTitulo() {
 
 
   return (
-    <View>
-       {mitologias.map((item, index) => (
-        <Link key={index} href={`./mitologia/${item.id}`}>
-          <View style={styles.card}>
-            <Text style={styles.cardText}>{item.titulo}</Text>
-          </View>
-        </Link>
-      ))}
-      <Text>HOLA MUNDO</Text>
-    </View>
+     <>
+      <Stack.Screen options={{ title: civilizacion }} />
+      <View>
+        {mitologias.map((item, index) => (
+          <Link key={index} href={`./mitologia/${item.id}`}>
+            <View style={styles.card}>
+              <Text style={styles.cardText}>{item.titulo}</Text>
+            </View>
+          </Link>
+        ))}
+        <Text>HOLA MUNDO</Text>
+      </View>
+     </>
   );
 }
